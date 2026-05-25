@@ -260,7 +260,7 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
     <div class="login-field"><label>Username</label><input type="text" id="username" placeholder="Enter owner username"></div>
     <div class="login-field"><label>Password</label><input type="password" id="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" onclick="doLogin()">🔓 Login to Dashboard</button>
-    <div class="login-hint">Login: <code>avdhesh</code> / <code>avdhesh@123</code></div>
+    <!-- <div class="login-hint">Login: <code>avdhesh</code> / <code>avdhesh@123</code></div> -->
   </div>
 </div>
 
@@ -389,7 +389,9 @@ td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'http://localhost:3000';
+// const API = 'http://localhost:3000';
+
+     const API =  'digiseva-cyber-cafe-production.up.railway.app';
 let allData    = [];
 let allAgents  = [];
 let currentFilter = 'all';
@@ -461,6 +463,8 @@ function startAutoRefresh() {
     loadAgents();
   }, 30000);
 }
+
+
 
 window.onload = () => {
   const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
