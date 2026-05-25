@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Portal — DigiSeva Cyber Café</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0a1628;--gold:#e8a020;--gold-light:#f5c842;
+  --cream:#fdf6e3;--rust:#c0392b;--teal:#0e7490;
+  --text:#1a2332;--muted:#6b7280;--border:#e2d9c8;
+  --card:#fff;--success:#059669;--purple:#7c3aed;
+  --orange:#ea580c;--err:#dc2626;--err-bg:#fef2f2;
+  --blue:#2563eb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans','Noto Sans Devanagari',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* AUTH */
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy) 0%,#1a3a5c 100%);padding:20px;}
+.auth-card{background:#fff;border-radius:24px;padding:40px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,0.3);}
+.back-home{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:12px;margin-bottom:16px;transition:color 0.2s;}
+.back-home:hover{color:var(--navy);}
+.auth-logo{text-align:center;margin-bottom:28px;}
+.auth-logo .icon{font-size:44px;margin-bottom:10px;}
+.auth-logo h1{font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:4px;}
+.auth-logo .hindi{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--orange);font-weight:600;}
+.auth-logo p{color:var(--muted);font-size:13px;margin-top:4px;}
+.auth-tabs{display:flex;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:24px;gap:4px;}
+.auth-tab{flex:1;padding:10px;border:none;background:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.auth-tab.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.auth-form{display:none;}
+.auth-form.active{display:block;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.form-group .hindi-label{display:block;font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:var(--orange);font-weight:600;margin-bottom:5px;}
+.form-group input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fafafa;outline:none;transition:all 0.2s;}
+.form-group input:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(14,116,144,0.1);}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--navy),#1a3a5c);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+.auth-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.auth-err{background:var(--err-bg);border:1px solid #fca5a5;color:var(--err);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+.auth-err.show{display:block;}
+.auth-success{background:#f0fdf4;border:1px solid #86efac;color:var(--success);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+.auth-success.show{display:block;}
+.forgot-link{display:block;text-align:right;font-size:12px;color:var(--blue);cursor:pointer;margin-top:-8px;margin-bottom:16px;font-weight:600;}
+.forgot-link:hover{text-decoration:underline;}
+.forgot-section{display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);}
+.forgot-section.show{display:block;}
+.forgot-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.forgot-title-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:var(--orange);margin-bottom:14px;}
+.forgot-step{display:none;}
+.forgot-step.active{display:block;}
+.otp-display{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #86efac;border-radius:12px;padding:16px;text-align:center;margin-bottom:16px;}
+.otp-note{font-size:12px;color:var(--muted);margin-top:6px;}
+.otp-note-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--orange);margin-top:3px;}
+.otp-timer{font-size:12px;color:var(--err);font-weight:600;margin-top:6px;}
+.sec-btn{width:100%;padding:12px;background:#f1f5f9;color:var(--navy);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.sec-btn:hover{background:#e2e8f0;}
+.sec-btn:disabled{opacity:0.6;cursor:not-allowed;}
+
+/* DASHBOARD */
+.dashboard{display:none;min-height:100vh;background:var(--cream);}
+header{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.3);}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:68px;}
+.logo{display:flex;align-items:center;gap:14px;}
+.logo-icon{width:42px;height:42px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.logo-text{font-family:'Playfair Display',serif;color:#fff;font-size:18px;font-weight:700;}
+.logo-text span{color:var(--gold);}
+.logo-sub{font-size:11px;color:#94a3b8;}
+.agent-info{display:flex;align-items:center;gap:12px;}
+.agent-badge{background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.3);color:var(--gold);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;}
+.logout-btn-top{padding:8px 16px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.3);color:#f85149;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.logout-btn-top:hover{background:rgba(248,81,73,0.2);}
+
+/* DASH TABS */
+.dash-tabs-bar{background:#fff;border-bottom:2px solid var(--border);}
+.dash-tabs-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;}
+.dash-tab{padding:14px 24px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.dash-tab.active{color:var(--navy);border-bottom-color:var(--gold);}
+.dash-tab.edit-tab{color:var(--purple);border-bottom-color:transparent;}
+.dash-tab.edit-tab.active{border-bottom-color:var(--purple);}
+
+.dash-content{max-width:1200px;margin:0 auto;padding:28px 24px;}
+.dash-panel{display:none;}
+.dash-panel.active{display:block;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px;border-top:3px solid transparent;}
+.stat-box.gold{border-top-color:var(--gold);}
+.stat-box.blue{border-top-color:var(--blue);}
+.stat-box.green{border-top-color:var(--success);}
+.stat-box.orange{border-top-color:var(--orange);}
+.stat-box .sval{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin:6px 0 2px;}
+.stat-box.gold .sval{color:var(--gold);}
+.stat-box.blue .sval{color:var(--blue);}
+.stat-box.green .sval{color:var(--success);}
+.stat-box.orange .sval{color:var(--orange);}
+.stat-box .slbl{font-size:12px;color:var(--muted);}
+
+/* APP CARDS */
+.app-grid{display:grid;gap:16px;}
+.app-card{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow 0.2s;}
+.app-card:hover{box-shadow:0 8px 32px rgba(0,0,0,0.08);}
+.app-card-header{background:linear-gradient(90deg,var(--navy),#1e3a5f);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.app-card-name{color:#fff;font-weight:600;font-size:15px;}
+.app-card-id{color:#94a3b8;font-size:11px;font-family:monospace;}
+.app-card-body{padding:16px 20px;}
+.app-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+.app-row:last-child{margin-bottom:0;}
+.app-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
+.pill.pending{background:#fef3c7;color:#92400e;}
+.pill.approved{background:#d1fae5;color:#065f46;}
+.pill.rejected{background:#fee2e2;color:#991b1b;}
+.pill.unpaid{background:#f3f4f6;color:#6b7280;}
+.pill.pay-pending{background:#fef3c7;color:#92400e;}
+.pill.verified{background:#d1fae5;color:#065f46;}
+.pill.pay-rejected{background:#fee2e2;color:#991b1b;}
+
+/* EDIT BUTTON on card */
+.edit-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(124,58,237,0.1);border:1.5px solid rgba(124,58,237,0.3);color:var(--purple);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:12px;width:100%;justify-content:center;}
+.edit-btn:hover{background:rgba(124,58,237,0.18);border-color:var(--purple);}
+.edit-btn-locked{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#f3f4f6;border:1.5px solid #d1d5db;color:#9ca3af;border-radius:8px;font-size:13px;font-weight:600;margin-top:12px;width:100%;justify-content:center;cursor:not-allowed;}
+
+/* OWNER COMMENT */
+.owner-comment{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-top:12px;}
+.comment-label{font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.comment-text{font-size:13px;color:#78350f;line-height:1.5;}
+.comment-time{font-size:10px;color:#a78bfa;margin-top:4px;}
+
+/* RECEIPT */
+.receipt-box{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:14px 16px;margin-top:12px;}
+.receipt-label{font-size:11px;font-weight:700;color:var(--success);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.receipt-label-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--orange);margin-bottom:10px;}
+.receipt-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.receipt-view-btn{flex:1;min-width:120px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;background:#fff;color:var(--success);border:2px solid var(--success);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.receipt-view-btn:hover{background:#f0fdf4;}
+.receipt-download-btn{flex:1;min-width:120px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;background:var(--success);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.receipt-download-btn:hover{background:#047857;}
+
+/* FORM CARD */
+.form-card{background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.08);overflow:hidden;border:1px solid var(--border);}
+.form-section-header{background:linear-gradient(90deg,var(--navy),#1a3a5c);padding:16px 28px;display:flex;align-items:center;gap:12px;}
+.form-section-header.edit-header{background:linear-gradient(90deg,#6d28d9,#7c3aed);}
+.form-section-header .icon{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.form-section-header.edit-header .icon{background:#c4b5fd;color:#4c1d95;}
+.form-section-header h2{color:#fff;font-family:'Playfair Display',serif;font-size:18px;}
+.form-section-header .fsh-hindi{color:#c4b5fd;font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;margin-top:2px;}
+.pan-form{padding:28px;}
+.pan-section{margin-bottom:26px;padding-bottom:26px;border-bottom:1px solid var(--border);}
+.pan-section:last-of-type{border-bottom:none;margin-bottom:0;}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.sec-title .hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;letter-spacing:0;text-transform:none;color:var(--orange);font-weight:600;}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.label-en{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.label-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;font-weight:600;color:var(--orange);margin-bottom:2px;}
+.req{color:var(--rust);}
+.field input,.field select{padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:#fafafa;outline:none;transition:all 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(14,116,144,0.1);}
+.field input.invalid,.field select.invalid{border-color:var(--err);background:var(--err-bg);}
+.field input.valid,.field select.valid{border-color:var(--success);background:#f0fdf4;}
+.field-err{display:none;font-size:11px;color:var(--err);font-weight:600;padding:3px 8px;background:var(--err-bg);border-radius:6px;margin-top:2px;}
+.field-err.show{display:block;}
+.field-err .hi{display:block;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;}
+
+/* UPLOAD ZONES */
+.upload-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all 0.25s;background:#fafafa;position:relative;}
+.upload-zone:hover{border-color:var(--gold);background:rgba(232,160,32,0.04);}
+.upload-zone.has-file{border-color:var(--success);background:rgba(5,150,105,0.04);}
+.upload-zone.err{border-color:var(--err);background:var(--err-bg);}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.uz-icon{font-size:26px;margin-bottom:5px;}
+.uz-en{font-size:12px;font-weight:700;color:var(--text);}
+.uz-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--orange);margin-top:2px;}
+.uz-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+.sig-zone{border-color:#a855f7;background:#faf5ff;}
+.sig-zone:hover{border-color:#7c3aed;background:#f3e8ff;}
+.sig-zone.has-file{border-color:var(--success);background:#f0fdf4;}
+.photo-zone{border-color:#0ea5e9;background:#f0f9ff;}
+.photo-zone:hover{border-color:#0284c7;background:#e0f2fe;}
+.photo-zone.has-file{border-color:var(--success);background:#f0fdf4;}
+.prev-wrap{margin-top:8px;display:none;}
+.prev-wrap.show{display:block;}
+.prev-box{border-radius:8px;overflow:hidden;border:2px solid var(--success);}
+.prev-box img{width:100%;height:110px;object-fit:cover;display:block;}
+.prev-box img.contain{object-fit:contain;background:#fff;padding:3px;height:80px;}
+.prev-fn{background:var(--success);color:#fff;font-size:10px;padding:3px 8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prev-ok{font-size:10px;color:var(--success);font-weight:700;margin-top:4px;text-align:center;}
+
+/* EXISTING FILES PREVIEW (edit mode) */
+.existing-files{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+.existing-files-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+.existing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.existing-img-box{border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.existing-img-box-label{background:var(--navy);color:#fff;font-size:9px;font-weight:600;padding:4px 8px;text-align:center;text-transform:uppercase;letter-spacing:0.5px;}
+.existing-img-box img{width:100%;height:80px;object-fit:cover;display:block;cursor:pointer;}
+.existing-img-box img:hover{opacity:0.85;}
+.existing-img-box img.contain{object-fit:contain;background:#fff;padding:2px;}
+.no-file-box{width:100%;height:80px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;background:#f3f4f6;}
+
+/* PAYMENT */
+.pay-box{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #86efac;border-radius:14px;padding:22px;text-align:center;margin-bottom:18px;}
+.pay-box h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy);}
+.pay-hindi-label{display:block;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--orange);font-weight:600;margin-top:2px;}
+.pay-amount{font-size:30px;font-weight:700;color:var(--success);margin:8px 0 2px;}
+.qr-wrap{display:inline-block;background:#fff;border-radius:14px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);margin:12px auto;border:2px solid #86efac;}
+.qr-wrap img{width:160px;height:160px;display:block;}
+.qr-upi{font-size:13px;color:var(--muted);margin-top:6px;}
+.qr-upi strong{color:var(--text);}
+.pay-steps{text-align:left;margin-top:12px;background:#fff;border-radius:8px;padding:12px 14px;}
+.pay-step{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;font-size:12px;}
+.pay-step:last-child{margin-bottom:0;}
+.step-n{width:20px;height:20px;background:var(--success);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-t .hi{display:block;font-family:'Noto Sans Devanagari',sans-serif;color:var(--orange);font-size:11px;margin-top:1px;}
+.pay-upload{border:2px dashed #86efac;border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:#f0fdf4;position:relative;transition:all 0.2s;}
+.pay-upload:hover{border-color:var(--success);background:#dcfce7;}
+.pay-upload.has-file{border-color:var(--success);background:#dcfce7;}
+.pay-upload.err{border-color:var(--err);background:var(--err-bg);}
+.pay-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+/* SUBMIT ERRORS */
+.sub-errors{display:none;background:var(--err-bg);border:1.5px solid #fca5a5;border-radius:12px;padding:14px 18px;margin-bottom:16px;}
+.sub-errors.show{display:block;}
+.sub-errors h4{color:var(--err);font-size:13px;margin-bottom:8px;}
+.sub-errors ul{list-style:none;padding:0;}
+.sub-errors ul li{font-size:12px;color:var(--err);padding:2px 0;display:flex;gap:6px;}
+.sub-errors ul li::before{content:'•';}
+.sub-errors ul li .hi{display:block;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;}
+.form-footer{padding:20px 28px;background:#f9f7f2;border-top:1px solid var(--border);}
+.submit-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--navy),#1a3a5c);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.submit-btn:hover{background:linear-gradient(135deg,#1a2d4f,var(--teal));transform:translateY(-1px);}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.submit-btn.edit-save{background:linear-gradient(135deg,#6d28d9,#7c3aed);}
+.submit-btn.edit-save:hover{background:linear-gradient(135deg,#5b21b6,#6d28d9);}
+.submit-btn.cancel-btn{background:#6b7280;flex:0 0 auto;width:auto;padding:15px 24px;}
+.btn-hi{display:block;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#c4b5fd;margin-top:2px;}
+
+/* COMMENT REMINDER IN EDIT */
+.comment-reminder{background:#fffbeb;border:2px solid #fcd34d;border-radius:12px;padding:14px 18px;margin:0 0 20px;}
+.comment-reminder-title{font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.comment-reminder-text{font-size:14px;color:#78350f;line-height:1.5;}
+
+/* TOAST */
+.toast{position:fixed;top:80px;right:20px;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.15);z-index:9999;transform:translateX(120%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:340px;}
+.toast.show{transform:translateX(0);}
+.toast.success{background:var(--success);color:#fff;}
+.toast.error{background:var(--rust);color:#fff;}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state .icon{font-size:40px;margin-bottom:12px;}
+
+@media(max-width:640px){
+  .grid-2,.grid-3,.upload-grid-2,.stats-row,.existing-grid{grid-template-columns:1fr 1fr;}
+  .existing-grid{grid-template-columns:1fr 1fr;}
+  .pan-form{padding:16px;}
+  .auth-card{padding:28px 20px;}
+  .receipt-btns{flex-direction:column;}
+  .dash-tab{padding:12px 14px;font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ AUTH SCREEN ═══════ -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <a href="index.html" class="back-home">← Back to Home / होम पेज पर जाएं</a>
+    <div class="auth-logo">
+      <div class="icon">🖥️</div>
+      <h1>DigiSeva Cyber Café</h1>
+      <div class="hindi">एजेंट पोर्टल — Agent Portal</div>
+      <p>Register or login to submit PAN applications</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuth('login',this)">🔐 Login</button>
+      <button class="auth-tab" onclick="switchAuth('register',this)">📝 Register</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-form active" id="loginForm">
+      <div class="auth-err" id="loginErr"></div>
+      <div class="auth-success" id="loginSuccess"></div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <span class="hindi-label">ईमेल पता</span>
+        <input type="email" id="loginEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <span class="hindi-label">पासवर्ड</span>
+        <input type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <span class="forgot-link" onclick="toggleForgot()">🔑 Forgot Password? / पासवर्ड भूल गए?</span>
+      <button class="auth-btn" onclick="doLogin()" id="loginBtn">🔓 Login</button>
+
+      <!-- FORGOT PASSWORD SECTION -->
+      <div class="forgot-section" id="forgotSection">
+        <!-- Step 1 -->
+        <div class="forgot-step active" id="fstep1">
+          <div class="forgot-title">🔑 Reset Password</div>
+          <div class="forgot-title-hi">अपना ईमेल और मोबाइल नंबर डालें</div>
+          <div class="auth-err" id="forgotErr"></div>
+          <div class="form-group">
+            <label>Registered Email</label>
+            <span class="hindi-label">पंजीकृत ईमेल</span>
+            <input type="email" id="forgotEmail" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label>Registered Phone</label>
+            <span class="hindi-label">पंजीकृत मोबाइल नंबर</span>
+            <input type="tel" id="forgotPhone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" placeholder="10-digit number">
+          </div>
+          <button class="auth-btn" onclick="requestOTP()" id="otpRequestBtn">📩 Send OTP to Email</button>
+          <button class="sec-btn" onclick="toggleForgot()">✕ Cancel</button>
+        </div>
+        <!-- Step 2 -->
+        <div class="forgot-step" id="fstep2">
+          <div class="forgot-title">📧 OTP Sent to Email</div>
+          <div class="forgot-title-hi">OTP आपके ईमेल पर भेज दिया गया है</div>
+          <div class="auth-err" id="resetErr"></div>
+          <div class="otp-display">
+            <div style="font-size:28px;margin-bottom:8px">📬</div>
+            <div style="font-size:14px;font-weight:700;color:var(--success)" id="otpSentMsg">OTP sent to your email!</div>
+            <div class="otp-note">Check your inbox for the 6-digit OTP</div>
+            <div class="otp-note-hi">अपने ईमेल में 6 अंकों का OTP देखें</div>
+            <div class="otp-timer" id="otpTimer">⏱ Valid for 15:00 minutes</div>
+          </div>
+          <div class="form-group">
+            <label>Enter OTP from Email</label>
+            <span class="hindi-label">ईमेल से मिला OTP डालें</span>
+            <input type="text" id="otpInput" placeholder="6-digit OTP" maxlength="6"
+              oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+              style="font-size:22px;letter-spacing:8px;text-align:center;font-weight:700">
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <span class="hindi-label">नया पासवर्ड (कम से कम 6 अक्षर)</span>
+            <input type="password" id="newPass" placeholder="Minimum 6 characters">
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <span class="hindi-label">पासवर्ड दोबारा डालें</span>
+            <input type="password" id="confirmPass" placeholder="Re-enter new password">
+          </div>
+          <button class="auth-btn" onclick="resetPassword()" id="resetBtn">🔓 Reset Password</button>
+          <button class="sec-btn" onclick="requestOTP()" id="resendBtn">📩 Resend OTP</button>
+          <button class="sec-btn" onclick="backToStep1()">← Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-form" id="registerForm">
+      <div class="auth-err" id="regErr"></div>
+      <div class="auth-success" id="regSuccess"></div>
+      <div class="form-group">
+        <label>Full Name *</label>
+        <span class="hindi-label">पूरा नाम</span>
+        <input type="text" id="regName" placeholder="Your full name">
+      </div>
+      <div class="form-group">
+        <label>Email Address *</label>
+        <span class="hindi-label">ईमेल पता</span>
+        <input type="email" id="regEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <span class="hindi-label">मोबाइल नंबर</span>
+        <input type="tel" id="regPhone" placeholder="10-digit mobile" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      </div>
+      <div class="form-group">
+        <label>Password *</label>
+        <span class="hindi-label">पासवर्ड (कम से कम 6 अक्षर)</span>
+        <input type="password" id="regPass" placeholder="Minimum 6 characters">
+      </div>
+      <button class="auth-btn" onclick="doRegister()" id="regBtn">✅ Register</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ DASHBOARD ═══════ -->
+<div class="dashboard" id="dashboard">
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">🖥️</div>
+        <div>
+          <div class="logo-text">DigiSeva <span>Agent</span></div>
+          <div class="logo-sub">Cyber Café PAN Portal</div>
+        </div>
+      </div>
+      <div class="agent-info">
+        <span class="agent-badge" id="agentBadge">👤 Agent</span>
+        <button class="logout-btn-top" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dash-tabs-bar">
+    <div class="dash-tabs-inner">
+      <button class="dash-tab active" id="tab-myApps" onclick="switchDash('myApps',this)">📋 My Applications</button>
+      <button class="dash-tab" id="tab-newForm" onclick="switchDash('newForm',this)">➕ New Application</button>
+      <button class="dash-tab edit-tab" id="tab-editForm" style="display:none" onclick="switchDash('editForm',this)">✏️ Edit Application</button>
+    </div>
+  </div>
+
+  <div class="dash-content">
+
+    <!-- MY APPLICATIONS -->
+    <div class="dash-panel active" id="panel-myApps">
+      <div class="stats-row">
+        <div class="stat-box gold"><div style="font-size:22px">📋</div><div class="sval" id="s-total">0</div><div class="slbl">Total Submitted</div></div>
+        <div class="stat-box blue"><div style="font-size:22px">⏳</div><div class="sval" id="s-pending">0</div><div class="slbl">Pending</div></div>
+        <div class="stat-box green"><div style="font-size:22px">✅</div><div class="sval" id="s-approved">0</div><div class="slbl">Approved</div></div>
+        <div class="stat-box orange"><div style="font-size:22px">💬</div><div class="sval" id="s-comments">0</div><div class="slbl">Owner Comments</div></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <input type="text" id="appSearch" placeholder="🔍 Search by name or phone..." oninput="renderApps()" style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;">
+        <button onclick="loadMyApps()" style="padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">↻ Refresh</button>
+      </div>
+      <div class="app-grid" id="appGrid"></div>
+      <div class="empty-state" id="appEmpty" style="display:none">
+        <div class="icon">📭</div>
+        <p>No applications yet. Click <strong>"New Application"</strong> to submit one.</p>
+        <p style="font-family:'Noto Sans Devanagari',sans-serif;color:var(--orange);margin-top:6px;font-size:13px">अभी तक कोई आवेदन नहीं।</p>
+      </div>
+    </div>
+
+    <!-- NEW APPLICATION -->
+    <div class="dash-panel" id="panel-newForm">
+      <div class="form-card">
+        <div class="form-section-header">
+          <div class="icon">📝</div>
+          <div>
+            <h2>New PAN Card Application</h2>
+            <div class="fsh-hindi">नया पैन कार्ड आवेदन — ग्राहक की जानकारी भरें</div>
+          </div>
+        </div>
+        <form id="panForm" novalidate>
+          <div class="pan-form">
+            <div class="pan-section">
+              <div class="sec-title">👤 Personal Information <span class="hi">/ व्यक्तिगत जानकारी</span></div>
+              <div class="grid-2" style="margin-bottom:14px">
+                <div class="field">
+                  <span class="label-en">Full Name (as on Aadhaar) <span class="req">*</span></span>
+                  <span class="label-hi">पूरा नाम (आधार के अनुसार)</span>
+                  <input type="text" id="fullName" name="fullName" placeholder="Ramesh Kumar Sharma" oninput="lv(this)" onblur="lv(this)">
+                  <div class="field-err" id="err-fullName">Only alphabets<span class="hi">केवल अंग्रेज़ी अक्षर</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">Father's Name <span class="req">*</span></span>
+                  <span class="label-hi">पिता का नाम</span>
+                  <input type="text" id="fatherName" name="fatherName" placeholder="Suresh Kumar Sharma" oninput="lv(this)" onblur="lv(this)">
+                  <div class="field-err" id="err-fatherName">Only alphabets<span class="hi">केवल अंग्रेज़ी अक्षर</span></div>
+                </div>
+              </div>
+              <div class="grid-3" style="margin-bottom:14px">
+                <div class="field">
+                  <span class="label-en">Date of Birth <span class="req">*</span></span>
+                  <span class="label-hi">जन्म तिथि</span>
+                  <input type="date" id="dob" name="dob" onchange="lv(this)" onblur="lv(this)">
+                  <div class="field-err" id="err-dob">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">Gender <span class="req">*</span></span>
+                  <span class="label-hi">लिंग</span>
+                  <select id="gender" name="gender" onchange="lv(this)">
+                    <option value="">— Select —</option>
+                    <option>Male</option><option>Female</option><option>Transgender</option>
+                  </select>
+                  <div class="field-err" id="err-gender">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">Customer Phone <span class="req">*</span></span>
+                  <span class="label-hi">ग्राहक का मोबाइल नंबर</span>
+                  <input type="tel" id="phone" name="phone" placeholder="10-digit number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');lv(this)" onblur="lv(this)">
+                  <div class="field-err" id="err-phone">Valid 10-digit (6-9)<span class="hi">6-9 से शुरू 10 अंक</span></div>
+                </div>
+              </div>
+              <div class="field">
+                <span class="label-en">Email (optional)</span>
+                <span class="label-hi">ईमेल (वैकल्पिक)</span>
+                <input type="email" id="email" name="email" placeholder="customer@email.com" oninput="lv(this)">
+                <div class="field-err" id="err-email">Valid email<span class="hi">सही ईमेल</span></div>
+              </div>
+            </div>
+            <div class="pan-section">
+              <div class="sec-title">🏠 Address <span class="hi">/ पता</span></div>
+              <div class="field" style="margin-bottom:14px">
+                <span class="label-en">Full Address <span class="req">*</span></span>
+                <span class="label-hi">पूरा पता</span>
+                <input type="text" id="address" name="address" placeholder="House No., Street, Area, Landmark" oninput="lv(this)" onblur="lv(this)">
+                <div class="field-err" id="err-address">Required<span class="hi">अनिवार्य</span></div>
+              </div>
+              <div class="grid-3">
+                <div class="field">
+                  <span class="label-en">City <span class="req">*</span></span>
+                  <span class="label-hi">शहर</span>
+                  <input type="text" id="city" name="city" placeholder="City" oninput="lv(this)" onblur="lv(this)">
+                  <div class="field-err" id="err-city">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">State <span class="req">*</span></span>
+                  <span class="label-hi">राज्य</span>
+                  <select id="state" name="state" onchange="lv(this)">
+                    <option value="">— Select —</option>
+                    <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option>
+                  </select>
+                  <div class="field-err" id="err-state">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">PIN Code <span class="req">*</span></span>
+                  <span class="label-hi">पिन कोड</span>
+                  <input type="text" id="pincode" name="pincode" placeholder="6-digit PIN" maxlength="6" oninput="this.value=this.value.replace(/[^0-9]/g,'');lv(this)" onblur="lv(this)">
+                  <div class="field-err" id="err-pincode">6 digits<span class="hi">6 अंक</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="pan-section">
+              <div class="sec-title">🪪 Aadhaar Upload <span class="hi">/ आधार अपलोड</span></div>
+              <div class="upload-grid-2">
+                <div>
+                  <div class="upload-zone" id="z-front"><input type="file" id="aadhaarFront" accept="image/*" onchange="handleFile(this,'front')"><div class="uz-icon">🪪</div><div class="uz-en">Aadhaar Front <span class="req">*</span></div><div class="uz-hi">आधार — अगला भाग</div><div class="uz-sub">JPG/PNG max 50MB</div></div>
+                  <div class="prev-wrap" id="pw-front"><div class="prev-box"><img id="pi-front" src="" alt=""><div class="prev-fn" id="pn-front"></div></div><div class="prev-ok">✅ Uploaded</div></div>
+                  <div class="field-err" id="err-front" style="margin-top:6px">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div>
+                  <div class="upload-zone" id="z-back"><input type="file" id="aadhaarBack" accept="image/*" onchange="handleFile(this,'back')"><div class="uz-icon">🔄</div><div class="uz-en">Aadhaar Back <span class="req">*</span></div><div class="uz-hi">आधार — पिछला भाग</div><div class="uz-sub">JPG/PNG max 50MB</div></div>
+                  <div class="prev-wrap" id="pw-back"><div class="prev-box"><img id="pi-back" src="" alt=""><div class="prev-fn" id="pn-back"></div></div><div class="prev-ok">✅ Uploaded</div></div>
+                  <div class="field-err" id="err-back" style="margin-top:6px">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="pan-section">
+              <div class="sec-title">✍️ Signature & Photo <span class="hi">/ हस्ताक्षर और फोटो</span></div>
+              <div class="upload-grid-2">
+                <div>
+                  <div class="upload-zone sig-zone" id="z-sig"><input type="file" id="signature" accept="image/*" onchange="handleFile(this,'sig')"><div class="uz-icon">✍️</div><div class="uz-en">Signature <span class="req">*</span></div><div class="uz-hi">हस्ताक्षर</div><div class="uz-sub">सफेद कागज पर साइन</div></div>
+                  <div class="prev-wrap" id="pw-sig"><div class="prev-box"><img class="contain" id="pi-sig" src="" alt=""><div class="prev-fn" id="pn-sig"></div></div><div class="prev-ok">✅ Uploaded</div></div>
+                  <div class="field-err" id="err-sig" style="margin-top:6px">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div>
+                  <div class="upload-zone photo-zone" id="z-photo"><input type="file" id="photograph" accept="image/*" onchange="handleFile(this,'photo')"><div class="uz-icon">🖼️</div><div class="uz-en">Passport Photo <span class="req">*</span></div><div class="uz-hi">पासपोर्ट साइज फोटो</div><div class="uz-sub">सफेद बैकग्राउंड</div></div>
+                  <div class="prev-wrap" id="pw-photo"><div class="prev-box"><img class="contain" id="pi-photo" src="" alt=""><div class="prev-fn" id="pn-photo"></div></div><div class="prev-ok">✅ Uploaded</div></div>
+                  <div class="field-err" id="err-photo" style="margin-top:6px">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="pan-section">
+              <div class="sec-title">💳 Payment <span class="hi">/ भुगतान</span></div>
+              <div class="pay-box">
+                <h3>Scan & Pay via UPI</h3>
+                <span class="pay-hindi-label">UPI से स्कैन करें और भुगतान करें</span>
+                <div class="pay-amount">₹399</div>
+                <p style="font-size:12px;color:var(--muted)">PAN Card Service Fee / पैन कार्ड सेवा शुल्क</p>
+                <div class="qr-wrap"><img src="qr.jpeg" alt="QR"></div>
+                <div class="qr-upi">UPI ID: <strong>paytmqr5gblgd@ptys</strong> | <strong>Avdhesh Kumar</strong></div>
+                <div class="pay-steps">
+                  <div class="pay-step"><div class="step-n">1</div><div class="step-t">Scan QR with PhonePe / GPay / Paytm<span class="hi">QR कोड स्कैन करें</span></div></div>
+                  <div class="pay-step"><div class="step-n">2</div><div class="step-t">Pay <strong>₹399</strong> and take screenshot<span class="hi">₹399 भुगतान करें और स्क्रीनशॉट लें</span></div></div>
+                  <div class="pay-step"><div class="step-n">3</div><div class="step-t">Upload screenshot below<span class="hi">नीचे स्क्रीनशॉट अपलोड करें</span></div></div>
+                </div>
+              </div>
+              <div>
+                <div style="margin-bottom:8px"><span class="label-en">Payment Screenshot <span class="req">*</span></span><div class="label-hi">भुगतान का स्क्रीनशॉट</div></div>
+                <div class="pay-upload" id="z-pay"><input type="file" id="payScreenshot" accept="image/*" onchange="handlePayFile(this)"><div class="uz-icon">📸</div><div class="uz-en">Upload Payment Screenshot</div><div class="uz-hi" style="font-family:'Noto Sans Devanagari',sans-serif;color:var(--orange)">भुगतान स्क्रीनशॉट अपलोड करें</div></div>
+                <div class="prev-wrap" id="pw-pay"><div class="prev-box"><img id="pi-pay" src="" alt=""><div class="prev-fn" id="pn-pay"></div></div><div class="prev-ok">✅ Payment Screenshot Uploaded</div></div>
+                <div class="field-err" id="err-pay" style="margin-top:6px">Required<span class="hi">अनिवार्य</span></div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="form-footer">
+          <div class="sub-errors" id="subErrors"><h4>⚠️ Please fix these errors / त्रुटियाँ ठीक करें</h4><ul id="errList"></ul></div>
+          <button class="submit-btn" onclick="submitApp()" id="submitBtn"><span>🚀</span><span>Submit Application<span class="btn-hi">फॉर्म जमा करें</span></span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT APPLICATION -->
+    <div class="dash-panel" id="panel-editForm">
+      <div class="form-card">
+        <div class="form-section-header edit-header">
+          <div class="icon">✏️</div>
+          <div>
+            <h2>Edit Application</h2>
+            <div class="fsh-hindi">आवेदन संपादित करें — मालिक के सुझाव के अनुसार बदलाव करें</div>
+          </div>
+        </div>
+
+        <!-- Owner comment reminder -->
+        <div id="editCommentBox" style="display:none;margin:20px 28px 0;">
+          <div class="comment-reminder">
+            <div class="comment-reminder-title">💬 Owner's Comment — Please fix this / मालिक का सुझाव:</div>
+            <div class="comment-reminder-text" id="editCommentText"></div>
+          </div>
+        </div>
+
+        <form id="editForm" novalidate>
+          <div class="pan-form">
+
+            <!-- Personal -->
+            <div class="pan-section">
+              <div class="sec-title">👤 Personal Information <span class="hi">/ व्यक्तिगत जानकारी</span></div>
+              <div class="grid-2" style="margin-bottom:14px">
+                <div class="field">
+                  <span class="label-en">Full Name <span class="req">*</span></span>
+                  <span class="label-hi">पूरा नाम</span>
+                  <input type="text" id="e-fullName" oninput="lve(this)" onblur="lve(this)">
+                  <div class="field-err" id="eerr-fullName">Only alphabets<span class="hi">केवल अंग्रेज़ी अक्षर</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">Father's Name <span class="req">*</span></span>
+                  <span class="label-hi">पिता का नाम</span>
+                  <input type="text" id="e-fatherName" oninput="lve(this)" onblur="lve(this)">
+                  <div class="field-err" id="eerr-fatherName">Only alphabets<span class="hi">केवल अंग्रेज़ी अक्षर</span></div>
+                </div>
+              </div>
+              <div class="grid-3" style="margin-bottom:14px">
+                <div class="field">
+                  <span class="label-en">Date of Birth <span class="req">*</span></span>
+                  <span class="label-hi">जन्म तिथि</span>
+                  <input type="date" id="e-dob" onchange="lve(this)">
+                  <div class="field-err" id="eerr-dob">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">Gender <span class="req">*</span></span>
+                  <span class="label-hi">लिंग</span>
+                  <select id="e-gender" onchange="lve(this)">
+                    <option value="">— Select —</option>
+                    <option>Male</option><option>Female</option><option>Transgender</option>
+                  </select>
+                  <div class="field-err" id="eerr-gender">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">Phone <span class="req">*</span></span>
+                  <span class="label-hi">मोबाइल नंबर</span>
+                  <input type="tel" id="e-phone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');lve(this)">
+                  <div class="field-err" id="eerr-phone">Valid 10-digit<span class="hi">10 अंक</span></div>
+                </div>
+              </div>
+              <div class="field">
+                <span class="label-en">Email (optional)</span>
+                <span class="label-hi">ईमेल (वैकल्पिक)</span>
+                <input type="email" id="e-email" oninput="lve(this)">
+                <div class="field-err" id="eerr-email">Valid email<span class="hi">सही ईमेल</span></div>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="pan-section">
+              <div class="sec-title">🏠 Address <span class="hi">/ पता</span></div>
+              <div class="field" style="margin-bottom:14px">
+                <span class="label-en">Full Address <span class="req">*</span></span>
+                <span class="label-hi">पूरा पता</span>
+                <input type="text" id="e-address" oninput="lve(this)" onblur="lve(this)">
+                <div class="field-err" id="eerr-address">Required<span class="hi">अनिवार्य</span></div>
+              </div>
+              <div class="grid-3">
+                <div class="field">
+                  <span class="label-en">City <span class="req">*</span></span>
+                  <span class="label-hi">शहर</span>
+                  <input type="text" id="e-city" oninput="lve(this)" onblur="lve(this)">
+                  <div class="field-err" id="eerr-city">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">State <span class="req">*</span></span>
+                  <span class="label-hi">राज्य</span>
+                  <select id="e-state" onchange="lve(this)">
+                    <option value="">— Select —</option>
+                    <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option>
+                  </select>
+                  <div class="field-err" id="eerr-state">Required<span class="hi">अनिवार्य</span></div>
+                </div>
+                <div class="field">
+                  <span class="label-en">PIN Code <span class="req">*</span></span>
+                  <span class="label-hi">पिन कोड</span>
+                  <input type="text" id="e-pincode" maxlength="6" oninput="this.value=this.value.replace(/[^0-9]/g,'');lve(this)">
+                  <div class="field-err" id="eerr-pincode">6 digits<span class="hi">6 अंक</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Re-upload documents -->
+            <div class="pan-section">
+              <div class="sec-title">🪪 Re-upload Documents <span class="hi">/ दस्तावेज़ बदलें (वैकल्पिक)</span></div>
+
+              <!-- Existing files preview -->
+              <div class="existing-files" id="existingFilesBox">
+                <div class="existing-files-title">📂 Current Files (click to view full size) / वर्तमान फाइलें</div>
+                <div class="existing-grid">
+                  <div class="existing-img-box"><div class="existing-img-box-label">Aadhaar Front</div><div id="ef-front"></div></div>
+                  <div class="existing-img-box"><div class="existing-img-box-label">Aadhaar Back</div><div id="ef-back"></div></div>
+                  <div class="existing-img-box"><div class="existing-img-box-label">Signature</div><div id="ef-sig"></div></div>
+                  <div class="existing-img-box"><div class="existing-img-box-label">Photograph</div><div id="ef-photo"></div></div>
+                </div>
+              </div>
+
+              <p style="font-size:12px;color:var(--muted);margin-bottom:14px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px 12px;">
+                💡 Only upload if you want to replace. Leave empty to keep existing file.<br>
+                <span style="font-family:'Noto Sans Devanagari',sans-serif;color:var(--orange)">केवल वही फाइल अपलोड करें जो बदलनी हो।</span>
+              </p>
+              <div class="upload-grid-2" style="margin-bottom:16px">
+                <div>
+                  <div class="upload-zone" id="ez-front"><input type="file" id="e-aadhaarFront" accept="image/*" onchange="handleEditFile(this,'efront')"><div class="uz-icon">🪪</div><div class="uz-en">New Aadhaar Front</div><div class="uz-hi">नया आधार अगला भाग</div><div class="uz-sub">optional / वैकल्पिक</div></div>
+                  <div class="prev-wrap" id="epw-front"><div class="prev-box"><img id="epi-front" src="" alt=""><div class="prev-fn" id="epn-front"></div></div><div class="prev-ok">✅ New front selected</div></div>
+                </div>
+                <div>
+                  <div class="upload-zone" id="ez-back"><input type="file" id="e-aadhaarBack" accept="image/*" onchange="handleEditFile(this,'eback')"><div class="uz-icon">🔄</div><div class="uz-en">New Aadhaar Back</div><div class="uz-hi">नया आधार पिछला भाग</div><div class="uz-sub">optional / वैकल्पिक</div></div>
+                  <div class="prev-wrap" id="epw-back"><div class="prev-box"><img id="epi-back" src="" alt=""><div class="prev-fn" id="epn-back"></div></div><div class="prev-ok">✅ New back selected</div></div>
+                </div>
+              </div>
+              <div class="upload-grid-2">
+                <div>
+                  <div class="upload-zone sig-zone" id="ez-sig"><input type="file" id="e-signature" accept="image/*" onchange="handleEditFile(this,'esig')"><div class="uz-icon">✍️</div><div class="uz-en">New Signature</div><div class="uz-hi">नया हस्ताक्षर</div><div class="uz-sub">optional / वैकल्पिक</div></div>
+                  <div class="prev-wrap" id="epw-sig"><div class="prev-box"><img class="contain" id="epi-sig" src="" alt=""><div class="prev-fn" id="epn-sig"></div></div><div class="prev-ok">✅ New signature selected</div></div>
+                </div>
+                <div>
+                  <div class="upload-zone photo-zone" id="ez-photo"><input type="file" id="e-photograph" accept="image/*" onchange="handleEditFile(this,'ephoto')"><div class="uz-icon">🖼️</div><div class="uz-en">New Photograph</div><div class="uz-hi">नई पासपोर्ट फोटो</div><div class="uz-sub">optional / वैकल्पिक</div></div>
+                  <div class="prev-wrap" id="epw-photo"><div class="prev-box"><img class="contain" id="epi-photo" src="" alt=""><div class="prev-fn" id="epn-photo"></div></div><div class="prev-ok">✅ New photo selected</div></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </form>
+        <div class="form-footer">
+          <div class="sub-errors" id="editErrors"><h4>⚠️ Please fix these errors / त्रुटियाँ ठीक करें</h4><ul id="editErrList"></ul></div>
+          <div style="display:flex;gap:12px;">
+            <button class="submit-btn cancel-btn" onclick="cancelEdit()">✕ Cancel</button>
+            <button class="submit-btn edit-save" onclick="saveEdit()" id="saveEditBtn"><span>💾</span><span>Save Changes<span class="btn-hi">बदलाव सहेजें</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:3000';
+let myApps    = [];
+let agentToken = null;
+let agentInfo  = null;
+let forgotEmail = '';
+let editingAppId = null;
+
+// ── Auth ─────────────────────────────────────────────
+function switchAuth(tab, btn) {
+  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tab + 'Form').classList.add('active');
+  document.getElementById('forgotSection').classList.remove('show');
+}
+
+function toggleForgot() {
+  const sec = document.getElementById('forgotSection');
+  sec.classList.toggle('show');
+  if (sec.classList.contains('show')) {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (email) document.getElementById('forgotEmail').value = email;
+    showForgotStep(1);
+  }
+}
+function showForgotStep(n) {
+  document.querySelectorAll('.forgot-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('fstep' + n).classList.add('active');
+}
+function backToStep1() { showForgotStep(1); }
+
+async function requestOTP() {
+  const btn  = document.getElementById('otpRequestBtn');
+  const err  = document.getElementById('forgotErr');
+  err.classList.remove('show');
+  const email = document.getElementById('forgotEmail').value.trim();
+  const phone = document.getElementById('forgotPhone').value.trim();
+  if (!email) { err.textContent='Please enter your email'; err.classList.add('show'); return; }
+  if (phone.length !== 10) { err.textContent='Enter valid 10-digit phone'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Sending...';
+  try {
+    const res  = await fetch(`${API}/api/agent/forgot-password`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, phone }) });
+    const data = await res.json();
+    if (data.success) {
+      forgotEmail = email;
+      document.getElementById('otpSentMsg').textContent = `OTP sent to ${email}`;
+      showForgotStep(2);
+      startOTPTimer(15 * 60);
+    } else {
+      err.textContent = data.error || 'Failed';
+      err.classList.add('show');
+    }
+  } catch(e) { err.textContent='Cannot connect'; err.classList.add('show'); }
+  btn.disabled = false; btn.textContent = '📩 Send OTP to Email';
+}
+
+function startOTPTimer(seconds) {
+  const timerEl = document.getElementById('otpTimer');
+  const interval = setInterval(() => {
+    const m = Math.floor(seconds / 60), s = seconds % 60;
+    timerEl.textContent = `⏱ Valid for ${m}:${String(s).padStart(2,'0')} minutes`;
+    seconds--;
+    if (seconds < 0) { clearInterval(interval); timerEl.textContent = '❌ OTP expired. Request again.'; }
+  }, 1000);
+}
+
+async function resetPassword() {
+  const btn = document.getElementById('resetBtn');
+  const err = document.getElementById('resetErr');
+  err.classList.remove('show');
+  const otp = document.getElementById('otpInput').value.trim();
+  const newPass = document.getElementById('newPass').value.trim();
+  const confirmPass = document.getElementById('confirmPass').value.trim();
+  if (!otp) { err.textContent='Enter the OTP'; err.classList.add('show'); return; }
+  if (!newPass || newPass.length < 6) { err.textContent='Password must be at least 6 characters'; err.classList.add('show'); return; }
+  if (newPass !== confirmPass) { err.textContent='Passwords do not match / पासवर्ड मेल नहीं खाते'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Resetting...';
+  try {
+    const res  = await fetch(`${API}/api/agent/reset-password`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: forgotEmail, otp, newPassword: newPass }) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('forgotSection').classList.remove('show');
+      const succ = document.getElementById('loginSuccess');
+      succ.textContent = '✅ ' + data.message;
+      succ.classList.add('show');
+      document.getElementById('loginEmail').value = forgotEmail;
+      document.getElementById('loginPass').value = '';
+      document.getElementById('otpInput').value = '';
+      document.getElementById('newPass').value = '';
+      document.getElementById('confirmPass').value = '';
+      showForgotStep(1);
+        localStorage.setItem('agentLoginTime', Date.now().toString());
+    } else {
+      err.textContent = data.error || 'Reset failed';
+      err.classList.add('show');
+    }
+  } catch(e) { err.textContent='Cannot connect'; err.classList.add('show'); }
+  btn.disabled = false; btn.textContent = '🔓 Reset Password';
+}
+
+async function doRegister() {
+  const btn = document.getElementById('regBtn');
+  const err = document.getElementById('regErr');
+  const succ = document.getElementById('regSuccess');
+  err.classList.remove('show'); succ.classList.remove('show');
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const pass  = document.getElementById('regPass').value.trim();
+  if (!name||!email||!phone||!pass) { err.textContent='All fields required'; err.classList.add('show'); return; }
+  if (phone.length !== 10) { err.textContent='Valid 10-digit phone required'; err.classList.add('show'); return; }
+  if (pass.length < 6) { err.textContent='Password min 6 characters'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Registering...';
+  try {
+    const res  = await fetch(`${API}/api/agent/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, email, phone, password: pass }) });
+    const data = await res.json();
+    if (data.success) {
+      succ.textContent = '✅ ' + data.message; succ.classList.add('show');
+      document.getElementById('regName').value = document.getElementById('regEmail').value = document.getElementById('regPhone').value = document.getElementById('regPass').value = '';
+    } else { err.textContent = data.error || 'Failed'; err.classList.add('show'); }
+  } catch(e) { err.textContent='Cannot connect'; err.classList.add('show'); }
+  btn.disabled = false; btn.textContent = '✅ Register';
+}
+
+async function doLogin() {
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
+  err.classList.remove('show');
+  document.getElementById('loginSuccess').classList.remove('show');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value.trim();
+  if (!email||!pass) { err.textContent='Enter email and password'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = '⏳ Logging in...';
+  try {
+    const res  = await fetch(`${API}/api/agent/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password: pass }) });
+    const data = await res.json();
+    if (data.success) {
+      agentToken = data.token; agentInfo = data.agent;
+      localStorage.setItem('agentToken', agentToken);
+      localStorage.setItem('agentInfo', JSON.stringify(agentInfo));
+      localStorage.setItem('agentLoginTime', Date.now().toString());
+      showDashboard();
+    } else { err.textContent = data.error || 'Login failed'; err.classList.add('show'); }
+  } catch(e) { err.textContent='Cannot connect'; err.classList.add('show'); }
+  btn.disabled = false; btn.textContent = '🔓 Login';
+}
+
+function showDashboard() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display  = 'block';
+  document.getElementById('agentBadge').textContent   = '👤 ' + agentInfo.name;
+  loadMyApps();
+  startSessionCheck();
+}
+
+function doLogout() {
+  localStorage.removeItem('agentToken');
+  localStorage.removeItem('agentInfo');
+  localStorage.removeItem('agentLoginTime');
+  agentToken = null; agentInfo = null;
+
+  // Clear login form
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value  = '';
+  document.getElementById('loginErr').classList.remove('show');
+  document.getElementById('loginSuccess').classList.remove('show');
+
+  // Clear register form
+  document.getElementById('regName').value  = '';
+  document.getElementById('regEmail').value = '';
+  document.getElementById('regPhone').value = '';
+  document.getElementById('regPass').value  = '';
+
+  // Clear forgot password fields
+  document.getElementById('forgotEmail').value  = '';
+  document.getElementById('forgotPhone').value  = '';
+  document.getElementById('otpInput').value     = '';
+  document.getElementById('newPass').value      = '';
+  document.getElementById('confirmPass').value  = '';
+  document.getElementById('forgotSection').classList.remove('show');
+
+  document.getElementById('dashboard').style.display  = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+}
+
+function startSessionCheck() {
+  setInterval(() => {
+    const t = parseInt(localStorage.getItem('agentLoginTime') || '0');
+    if (Date.now() - t > 12 * 60 * 60 * 1000) {
+      doLogout();
+      const err = document.getElementById('loginErr');
+      err.textContent = '⏰ Session expired. Please login again.';
+      err.classList.add('show');
+    }
+  }, 60000);
+}
+
+window.onload = () => {
+  const token = localStorage.getItem('agentToken');
+  const info  = localStorage.getItem('agentInfo');
+  const t     = parseInt(localStorage.getItem('agentLoginTime') || '0');
+  if (token && info && (Date.now() - t) < 12 * 60 * 60 * 1000) {
+    agentToken = token; agentInfo = JSON.parse(info);
+    showDashboard();
+  }
+};
+
+// ── Dashboard tabs ────────────────────────────────────
+function switchDash(panel, btn) {
+  document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
+}
+
+// ── Load Applications ─────────────────────────────────
+async function loadMyApps() {
+  try {
+    const res = await fetch(`${API}/api/agent/applications`, { headers: { 'Authorization': 'Bearer ' + agentToken } });
+    if (res.status === 401) { doLogout(); return; }
+    myApps = await res.json();
+    renderStats();
+    renderApps();
+  } catch(e) { showToast('Cannot connect to server','error'); }
+}
+
+function renderStats() {
+  document.getElementById('s-total').textContent    = myApps.length;
+  document.getElementById('s-pending').textContent  = myApps.filter(a => a.status === 'Pending').length;
+  document.getElementById('s-approved').textContent = myApps.filter(a => a.status === 'Approved').length;
+  document.getElementById('s-comments').textContent = myApps.filter(a => a.ownerComment && a.ownerComment.trim()).length;
+}
+
+function renderApps() {
+  const grid  = document.getElementById('appGrid');
+  const empty = document.getElementById('appEmpty');
+  const q     = document.getElementById('appSearch').value.toLowerCase();
+  let data    = [...myApps];
+  if (q) data = data.filter(a => a.fullName.toLowerCase().includes(q) || a.phone.includes(q));
+  if (!data.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  grid.innerHTML = data.map(a => {
+    const apCls = { Pending:'pending', Approved:'approved', Rejected:'rejected' }[a.status] || 'pending';
+    const apLbl = { Pending:'⏳ Pending', Approved:'✅ Approved', Rejected:'❌ Rejected' }[a.status] || a.status;
+    const payCls = { Unpaid:'unpaid', Pending:'pay-pending', Verified:'verified', Rejected:'pay-rejected' }[a.paymentStatus] || 'unpaid';
+    const payLbl = { Unpaid:'💳 Unpaid', Pending:'⏳ Verifying', Verified:'✅ Verified', Rejected:'❌ Rejected' }[a.paymentStatus] || a.paymentStatus;
+    const isLocked = a.paymentStatus === 'Verified' && a.status === 'Approved';
+
+    const commentHtml = a.ownerComment ? `
+      <div class="owner-comment">
+        <div class="comment-label">💬 Owner Comment / मालिक का संदेश</div>
+        <div class="comment-text">${a.ownerComment}</div>
+        ${a.commentUpdatedAt ? `<div class="comment-time">${new Date(a.commentUpdatedAt).toLocaleString('en-IN')}</div>` : ''}
+      </div>` : '';
+
+    const receiptHtml = a.receipt ? `
+      <div class="receipt-box">
+        <div class="receipt-label">🧾 Receipt Available / रसीद उपलब्ध</div>
+        <div class="receipt-label-hi">रसीद देखें या डाउनलोड करें</div>
+        <div class="receipt-btns">
+          <a href="${a.receipt}" target="_blank" class="receipt-view-btn">👁 View Receipt</a>
+          <button class="receipt-download-btn" onclick="downloadReceipt('${a.receipt}','${a.fullName}')">📥 Download</button>
+        </div>
+      </div>` : '';
+
+    // Edit button — shown only if NOT fully locked
+    const editBtn = isLocked
+      ? `<div class="edit-btn-locked">🔒 Locked — Cannot Edit</div>`
+      : `<button class="edit-btn" onclick="openEdit('${a._id}')">✏️ Edit Application / आवेदन संपादित करें</button>`;
+
+    return `
+    <div class="app-card">
+      <div class="app-card-header">
+        <div>
+          <div class="app-card-name">${a.fullName}</div>
+          <div class="app-card-id">ID: ${a._id.slice(-10).toUpperCase()} | ${a.phone}</div>
+        </div>
+        <div style="font-size:11px;color:#94a3b8">${new Date(a.submittedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div>
+      </div>
+      <div class="app-card-body">
+        <div class="app-row"><span class="app-label">Application Status</span><span class="pill ${apCls}">${apLbl}</span></div>
+        <div class="app-row"><span class="app-label">Payment Status</span><span class="pill ${payCls}">${payLbl}</span></div>
+        <div class="app-row"><span class="app-label">City / State</span><span style="font-size:13px">${a.city}, ${a.state}</span></div>
+        <div class="app-row"><span class="app-label">Fee</span><span style="font-size:14px;font-weight:700;color:var(--success)">₹${a.paymentAmount||399}</span></div>
+        ${commentHtml}
+        ${receiptHtml}
+        ${editBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── EDIT APPLICATION ──────────────────────────────────
+function openEdit(appId) {
+  const a = myApps.find(x => x._id === appId);
+  if (!a) return;
+  editingAppId = appId;
+
+  // Pre-fill all text fields
+  document.getElementById('e-fullName').value   = a.fullName   || '';
+  document.getElementById('e-fatherName').value = a.fatherName || '';
+  document.getElementById('e-dob').value        = a.dob        || '';
+  document.getElementById('e-gender').value     = a.gender     || '';
+  document.getElementById('e-phone').value      = a.phone      || '';
+  document.getElementById('e-email').value      = a.email      || '';
+  document.getElementById('e-address').value    = a.address    || '';
+  document.getElementById('e-city').value       = a.city       || '';
+  document.getElementById('e-state').value      = a.state      || '';
+  document.getElementById('e-pincode').value    = a.pincode    || '';
+
+  // Mark all filled fields as valid
+  ['e-fullName','e-fatherName','e-dob','e-gender','e-phone','e-address','e-city','e-state','e-pincode'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.value) { el.classList.add('valid'); el.classList.remove('invalid'); }
+  });
+
+  // Show owner comment if any
+  const commentBox = document.getElementById('editCommentBox');
+  if (a.ownerComment && a.ownerComment.trim()) {
+    document.getElementById('editCommentText').textContent = a.ownerComment;
+    commentBox.style.display = 'block';
+  } else {
+    commentBox.style.display = 'none';
+  }
+
+  // Show existing files
+  function showExisting(id, url, isContain) {
+    const box = document.getElementById(id);
+    if (url) {
+      box.innerHTML = `<img src="${url}" class="${isContain?'contain':''}" onclick="window.open('${url}','_blank')" title="Click to view">`;
+    } else {
+      box.innerHTML = `<div class="no-file-box">Not uploaded</div>`;
+    }
+  }
+  showExisting('ef-front',  a.aadhaarFront, false);
+  showExisting('ef-back',   a.aadhaarBack,  false);
+  showExisting('ef-sig',    a.signature,    true);
+  showExisting('ef-photo',  a.photograph,   true);
+
+  // Clear file inputs and previews
+  ['e-aadhaarFront','e-aadhaarBack','e-signature','e-photograph'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['epw-front','epw-back','epw-sig','epw-photo'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  ['ez-front','ez-back','ez-sig','ez-photo'].forEach(id => {
+    document.getElementById(id).classList.remove('has-file');
+  });
+
+  // Clear errors
+  document.getElementById('editErrors').classList.remove('show');
+
+  // Show edit tab and switch to it
+  const editTab = document.getElementById('tab-editForm');
+  editTab.style.display = 'flex';
+  switchDash('editForm', editTab);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEdit() {
+  editingAppId = null;
+  document.getElementById('tab-editForm').style.display = 'none';
+  switchDash('myApps', document.getElementById('tab-myApps'));
+}
+
+async function saveEdit() {
+  if (!editingAppId) return;
+  const btn    = document.getElementById('saveEditBtn');
+  const errors = [];
+
+  // Validate edit form fields
+  const editRules = {
+    'e-fullName':   { required:true,  test: v => /^[A-Za-z\s.]+$/.test(v.trim()) },
+    'e-fatherName': { required:true,  test: v => /^[A-Za-z\s.]+$/.test(v.trim()) },
+    'e-dob':        { required:true,  test: v => !!v },
+    'e-gender':     { required:true,  test: v => !!v },
+    'e-phone':      { required:true,  test: v => /^[6-9][0-9]{9}$/.test(v) },
+    'e-email':      { required:false, test: v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+    'e-address':    { required:true,  test: v => v.trim().length >= 5 },
+    'e-city':       { required:true,  test: v => v.trim().length >= 2 },
+    'e-state':      { required:true,  test: v => !!v },
+    'e-pincode':    { required:true,  test: v => /^[0-9]{6}$/.test(v) },
+  };
+
+  Object.keys(editRules).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const r = editRules[id], v = el.value;
+    if (r.required && !v) {
+      el.classList.add('invalid'); el.classList.remove('valid');
+      errors.push({ en: id.replace('e-',''), hi: '' });
+    } else if (v && !r.test(v)) {
+      el.classList.add('invalid'); el.classList.remove('valid');
+      errors.push({ en: 'Invalid: ' + id.replace('e-',''), hi: '' });
+    }
+  });
+
+  const errBox = document.getElementById('editErrors');
+  if (errors.length) {
+    document.getElementById('editErrList').innerHTML = errors.map(e=>`<li>${e.en}</li>`).join('');
+    errBox.classList.add('show');
+    errBox.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  errBox.classList.remove('show');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>Saving... / सहेज रहे हैं</span>';
+
+  const fd = new FormData();
+  fd.append('fullName',   document.getElementById('e-fullName').value.trim());
+  fd.append('fatherName', document.getElementById('e-fatherName').value.trim());
+  fd.append('dob',        document.getElementById('e-dob').value);
+  fd.append('gender',     document.getElementById('e-gender').value);
+  fd.append('phone',      document.getElementById('e-phone').value.trim());
+  fd.append('email',      document.getElementById('e-email').value.trim());
+  fd.append('address',    document.getElementById('e-address').value.trim());
+  fd.append('city',       document.getElementById('e-city').value.trim());
+  fd.append('state',      document.getElementById('e-state').value);
+  fd.append('pincode',    document.getElementById('e-pincode').value.trim());
+
+  // Append new files only if selected
+  const ef = document.getElementById('e-aadhaarFront').files[0];
+  const eb = document.getElementById('e-aadhaarBack').files[0];
+  const es = document.getElementById('e-signature').files[0];
+  const ep = document.getElementById('e-photograph').files[0];
+  if (ef) fd.append('aadhaarFront', ef);
+  if (eb) fd.append('aadhaarBack',  eb);
+  if (es) fd.append('signature',    es);
+  if (ep) fd.append('photograph',   ep);
+
+  try {
+    const res  = await fetch(`${API}/api/apply/${editingAppId}`, {
+      method:  'PATCH',
+      headers: { 'Authorization': 'Bearer ' + agentToken },
+      body:    fd
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showToast('✅ Application updated successfully! / आवेदन अपडेट हो गया!', 'success');
+      cancelEdit();
+      await loadMyApps();
+    } else {
+      showToast('Error: ' + (data.error || data.message || 'Update failed'), 'error');
+    }
+  } catch(e) {
+    showToast('Cannot connect to server', 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>💾</span><span>Save Changes<span class="btn-hi">बदलाव सहेजें</span></span>';
+}
+
+// ── Live validation (new form) ────────────────────────
+const rules = {
+  fullName:   { required:true,  test: v => /^[A-Za-z\s.]+$/.test(v.trim()) },
+  fatherName: { required:true,  test: v => /^[A-Za-z\s.]+$/.test(v.trim()) },
+  dob:        { required:true,  test: v => !!v },
+  gender:     { required:true,  test: v => !!v },
+  phone:      { required:true,  test: v => /^[6-9][0-9]{9}$/.test(v) },
+  email:      { required:false, test: v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+  address:    { required:true,  test: v => v.trim().length >= 5 },
+  city:       { required:true,  test: v => v.trim().length >= 2 },
+  state:      { required:true,  test: v => !!v },
+  pincode:    { required:true,  test: v => /^[0-9]{6}$/.test(v) },
+};
+
+function lv(el) {
+  const rule = rules[el.id]; if (!rule) return;
+  const v = el.value, err = document.getElementById('err-' + el.id);
+  if (!v && rule.required) { el.classList.add('invalid'); el.classList.remove('valid'); if(err) err.classList.add('show'); return; }
+  if (!v && !rule.required) { el.classList.remove('invalid','valid'); if(err) err.classList.remove('show'); return; }
+  if (rule.test(v)) { el.classList.add('valid'); el.classList.remove('invalid'); if(err) err.classList.remove('show'); }
+  else              { el.classList.add('invalid'); el.classList.remove('valid'); if(err) err.classList.add('show'); }
+}
+
+// ── Live validation (edit form) ───────────────────────
+const editRules = {
+  'e-fullName':   { required:true,  test: v => /^[A-Za-z\s.]+$/.test(v.trim()) },
+  'e-fatherName': { required:true,  test: v => /^[A-Za-z\s.]+$/.test(v.trim()) },
+  'e-dob':        { required:true,  test: v => !!v },
+  'e-gender':     { required:true,  test: v => !!v },
+  'e-phone':      { required:true,  test: v => /^[6-9][0-9]{9}$/.test(v) },
+  'e-email':      { required:false, test: v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+  'e-address':    { required:true,  test: v => v.trim().length >= 5 },
+  'e-city':       { required:true,  test: v => v.trim().length >= 2 },
+  'e-state':      { required:true,  test: v => !!v },
+  'e-pincode':    { required:true,  test: v => /^[0-9]{6}$/.test(v) },
+};
+
+function lve(el) {
+  const rule = editRules[el.id]; if (!rule) return;
+  const v = el.value;
+  const errId = 'eerr-' + el.id.replace('e-','');
+  const err = document.getElementById(errId);
+  if (!v && rule.required) { el.classList.add('invalid'); el.classList.remove('valid'); if(err) err.classList.add('show'); return; }
+  if (!v && !rule.required) { el.classList.remove('invalid','valid'); if(err) err.classList.remove('show'); return; }
+  if (rule.test(v)) { el.classList.add('valid'); el.classList.remove('invalid'); if(err) err.classList.remove('show'); }
+  else              { el.classList.add('invalid'); el.classList.remove('valid'); if(err) err.classList.add('show'); }
+}
+
+// ── File handlers ─────────────────────────────────────
+function handleFile(input, side) {
+  const file = input.files[0]; if (!file) return;
+  const errIds = { front:'err-front', back:'err-back', sig:'err-sig', photo:'err-photo' };
+  document.getElementById('z-'+side).classList.add('has-file');
+  document.getElementById('z-'+side).classList.remove('err');
+  document.getElementById('pn-'+side).textContent = file.name;
+  document.getElementById(errIds[side]).classList.remove('show');
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById('pi-'+side).src = e.target.result; document.getElementById('pw-'+side).classList.add('show'); };
+  reader.readAsDataURL(file);
+}
+
+function handlePayFile(input) {
+  const file = input.files[0]; if (!file) return;
+  document.getElementById('z-pay').classList.add('has-file');
+  document.getElementById('z-pay').classList.remove('err');
+  document.getElementById('pn-pay').textContent = file.name;
+  document.getElementById('err-pay').classList.remove('show');
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById('pi-pay').src = e.target.result; document.getElementById('pw-pay').classList.add('show'); };
+  reader.readAsDataURL(file);
+}
+
+function handleEditFile(input, side) {
+  const file = input.files[0]; if (!file) return;
+  const zoneMap = { efront:'ez-front', eback:'ez-back', esig:'ez-sig', ephoto:'ez-photo' };
+  const prevMap = { efront:'epw-front', eback:'epw-back', esig:'epw-sig', ephoto:'epw-photo' };
+  const imgMap  = { efront:'epi-front', eback:'epi-back', esig:'epi-sig', ephoto:'epi-photo' };
+  const nameMap = { efront:'epn-front', eback:'epn-back', esig:'epn-sig', ephoto:'epn-photo' };
+  document.getElementById(zoneMap[side]).classList.add('has-file');
+  document.getElementById(nameMap[side]).textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById(imgMap[side]).src = e.target.result; document.getElementById(prevMap[side]).classList.add('show'); };
+  reader.readAsDataURL(file);
+}
+
+// ── Submit new application ────────────────────────────
+async function submitApp() {
+  const btn    = document.getElementById('submitBtn');
+  const errors = [];
+
+  Object.keys(rules).forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    lv(el);
+    const r = rules[id], v = el.value;
+    if (r.required && !v) errors.push({ en: id, hi: getHi(id) });
+    else if (v && !r.test(v)) errors.push({ en: 'Invalid: '+id, hi: '' });
+  });
+
+  const ff = document.getElementById('aadhaarFront').files[0];
+  const fb = document.getElementById('aadhaarBack').files[0];
+  const fs = document.getElementById('signature').files[0];
+  const fp = document.getElementById('photograph').files[0];
+  const fy = document.getElementById('payScreenshot').files[0];
+
+  if (!ff) { document.getElementById('z-front').classList.add('err'); document.getElementById('err-front').classList.add('show'); errors.push({ en:'Aadhaar Front', hi:'आधार अगला भाग' }); }
+  if (!fb) { document.getElementById('z-back').classList.add('err');  document.getElementById('err-back').classList.add('show');  errors.push({ en:'Aadhaar Back',  hi:'आधार पिछला भाग' }); }
+  if (!fs) { document.getElementById('z-sig').classList.add('err');   document.getElementById('err-sig').classList.add('show');   errors.push({ en:'Signature',    hi:'हस्ताक्षर' }); }
+  if (!fp) { document.getElementById('z-photo').classList.add('err'); document.getElementById('err-photo').classList.add('show'); errors.push({ en:'Photograph',   hi:'पासपोर्ट फोटो' }); }
+  if (!fy) { document.getElementById('z-pay').classList.add('err');   document.getElementById('err-pay').classList.add('show');   errors.push({ en:'Payment Screenshot', hi:'भुगतान स्क्रीनशॉट' }); }
+
+  const errBox = document.getElementById('subErrors');
+  if (errors.length) {
+    document.getElementById('errList').innerHTML = errors.map(e=>`<li>${e.en}<span class="hi">${e.hi}</span></li>`).join('');
+    errBox.classList.add('show');
+    errBox.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  errBox.classList.remove('show');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>Submitting... / जमा हो रहा है</span>';
+
+  const fd = new FormData(document.getElementById('panForm'));
+  fd.set('aadhaarFront', ff); fd.set('aadhaarBack', fb);
+  fd.set('signature', fs);    fd.set('photograph', fp);
+
+  try {
+    const res  = await fetch(`${API}/api/apply`, { method:'POST', headers:{'Authorization':'Bearer '+agentToken}, body:fd });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    const payFd = new FormData();
+    payFd.append('paymentScreenshot', fy);
+    await fetch(`${API}/api/payment/${data.id}`, { method:'POST', headers:{'Authorization':'Bearer '+agentToken}, body:payFd });
+
+    showToast('✅ Application submitted successfully!', 'success');
+    document.getElementById('panForm').reset();
+    document.querySelectorAll('.prev-wrap').forEach(p => p.classList.remove('show'));
+    document.querySelectorAll('.upload-zone,.pay-upload').forEach(z => z.classList.remove('has-file','err'));
+    document.querySelectorAll('input,select').forEach(el => el.classList.remove('valid','invalid'));
+    errBox.classList.remove('show');
+    switchDash('myApps', document.getElementById('tab-myApps'));
+    await loadMyApps();
+  } catch(e) { showToast('Error: '+(e.message||'Cannot connect'),'error'); }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>🚀</span><span>Submit Application<span class="btn-hi">फॉर्म जमा करें</span></span>';
+}
+
+// ── Download Receipt ──────────────────────────────────
+async function downloadReceipt(url, customerName) {
+  try {
+    const response = await fetch(url);
+    const blob     = await response.blob();
+    const ext      = url.split('.').pop().split('?')[0] || 'jpg';
+    const filename = `${customerName.replace(/\s+/g,'_')}_PAN_Receipt.${ext}`;
+    const link     = document.createElement('a');
+    link.href      = URL.createObjectURL(blob);
+    link.download  = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    showToast(`📥 Downloading: ${filename}`, 'success');
+  } catch(e) {
+    window.open(url, '_blank');
+    showToast('Opening receipt in new tab', 'success');
+  }
+}
+
+function getHi(id) {
+  const m={ fullName:'पूरा नाम', fatherName:'पिता का नाम', dob:'जन्म तिथि', gender:'लिंग', phone:'मोबाइल', address:'पता', city:'शहर', state:'राज्य', pincode:'पिन' };
+  return m[id]||'';
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.className = `toast ${type}`; t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 5000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiSeva Cyber Café — PAN Card Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0a1628; --navy2:#1a3a5c; --gold:#e8a020; --gold2:#f5c842;
+    --cream:#fdf6e3; --teal:#0e7490; --text:#1a2332; --muted:#6b7280;
+    --border:#e2d9c8; --success:#059669; --purple:#7c3aed; --orange:#ea580c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--gold);
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    height: 38px;
+    display: flex;
+    align-items: center;
+  }
+  .ticker-wrap::before, .ticker-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 60px;
+    z-index: 2;
+  }
+  .ticker-wrap::before { left: 0; background: linear-gradient(to right, var(--gold), transparent); }
+  .ticker-wrap::after  { right: 0; background: linear-gradient(to left, var(--gold), transparent); }
+  .ticker-label {
+    position: absolute; left: 0;
+    background: var(--navy); color: var(--gold);
+    font-size: 12px; font-weight: 700;
+    padding: 0 14px;
+    height: 100%; display: flex; align-items: center;
+    z-index: 3; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .ticker-track {
+    display: inline-flex;
+    animation: ticker 18s linear infinite;
+    padding-left: 180px;
+  }
+  .ticker-track:hover { animation-play-state: paused; }
+  .ticker-item {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--navy);
+    padding: 0 50px;
+    display: inline-flex; align-items: center; gap: 12px;
+  }
+  .ticker-item::before { content: '🏛️'; font-size: 14px; }
+  @keyframes ticker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── NAV ── */
+  nav{background:var(--navy);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.3);}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px;}
+  .nav-logo{display:flex;align-items:center;gap:14px;}
+  .nav-logo-icon{width:42px;height:42px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .nav-logo-text{font-family:'Playfair Display',serif;color:#fff;font-size:20px;font-weight:700;}
+  .nav-logo-text span{color:var(--gold);}
+  .nav-logo-sub{font-size:11px;color:#94a3b8;letter-spacing:1px;}
+  .nav-links{display:flex;align-items:center;gap:8px;}
+  .nav-link{color:#94a3b8;text-decoration:none;font-size:13px;font-weight:500;padding:7px 14px;border-radius:6px;transition:all 0.2s;}
+  .nav-link:hover{color:var(--gold);background:rgba(232,160,32,0.1);}
+  .nav-btn{padding:8px 18px;background:var(--gold);color:#000;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .nav-btn:hover{background:var(--gold2);transform:translateY(-1px);}
+
+  /* ── HERO ── */
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 55%,var(--teal) 100%);padding:90px 24px 80px;text-align:center;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8a020' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.3);color:var(--gold2);padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;letter-spacing:0.5px;margin-bottom:24px;position:relative;}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,6vw,58px);color:#fff;line-height:1.15;margin-bottom:10px;position:relative;}
+  .hero h1 span{color:var(--gold);}
+  .hero-hindi{font-family:'Noto Sans Devanagari',sans-serif;font-size:clamp(16px,3vw,22px);color:#c4b5fd;margin-bottom:18px;position:relative;font-weight:500;}
+  .hero p{color:#94a3b8;font-size:16px;max-width:520px;margin:0 auto 40px;line-height:1.6;position:relative;}
+
+  .hero-cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;position:relative;}
+  .hero-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px 36px;width:280px;text-align:center;text-decoration:none;color:#fff;transition:all 0.3s;backdrop-filter:blur(10px);}
+  .hero-card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.12);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+  .hero-card.agent{border-color:rgba(232,160,32,0.4);background:rgba(232,160,32,0.08);}
+  .hero-card.agent:hover{background:rgba(232,160,32,0.15);border-color:var(--gold);}
+  .hero-card.owner{border-color:rgba(88,166,255,0.4);background:rgba(88,166,255,0.08);}
+  .hero-card.owner:hover{background:rgba(88,166,255,0.15);border-color:#58a6ff;}
+  .card-emoji{font-size:48px;margin-bottom:16px;display:block;}
+  .card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+  .hero-card.agent .card-title{color:var(--gold);}
+  .hero-card.owner .card-title{color:#58a6ff;}
+  .card-desc{font-size:13px;color:#94a3b8;line-height:1.5;margin-bottom:20px;}
+  .card-hindi{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#c4b5fd;margin-bottom:16px;}
+  .card-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;transition:all 0.2s;border:none;cursor:pointer;text-decoration:none;}
+  .hero-card.agent .card-btn{background:var(--gold);color:#000;}
+  .hero-card.agent .card-btn:hover{background:var(--gold2);}
+  .hero-card.owner .card-btn{background:#58a6ff;color:#000;}
+  .hero-card.owner .card-btn:hover{background:#7cc4ff;}
+
+  /* ── FEATURES ── */
+  .features{max-width:1100px;margin:0 auto;padding:80px 24px;}
+  .section-badge{display:inline-block;background:rgba(232,160,32,0.1);border:1px solid rgba(232,160,32,0.3);color:var(--gold);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-bottom:16px;}
+  .section-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,38px);color:var(--navy);margin-bottom:8px;}
+  .section-title span{color:var(--teal);}
+  .section-sub{font-size:15px;color:var(--muted);max-width:500px;line-height:1.6;margin-bottom:50px;}
+  .section-sub-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--orange);display:block;margin-top:4px;}
+  .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;}
+  .feature-card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:28px 24px;transition:all 0.25s;}
+  .feature-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.08);border-color:var(--gold);}
+  .feature-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;}
+  .feature-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy);margin-bottom:6px;}
+  .feature-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:var(--orange);margin-bottom:8px;font-weight:600;}
+  .feature-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+  /* ── HOW IT WORKS ── */
+  .how{background:var(--navy);padding:80px 24px;}
+  .how-inner{max-width:1100px;margin:0 auto;}
+  .how .section-title{color:#fff;}
+  .how .section-sub{color:#94a3b8;}
+  .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:48px;}
+  .step-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px 22px;}
+  .step-num{width:36px;height:36px;background:var(--gold);color:#000;border-radius:10px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+  .step-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;}
+  .step-hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#c4b5fd;margin-bottom:8px;}
+  .step-desc{font-size:13px;color:#64748b;line-height:1.5;}
+
+  /* ── INFO STRIP ── */
+  .info-strip{background:linear-gradient(135deg,var(--teal),#0a7499);padding:50px 24px;text-align:center;}
+  .info-strip h2{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,32px);color:#fff;margin-bottom:8px;}
+  .info-strip .hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:16px;color:#cffafe;margin-bottom:24px;display:block;}
+  .info-strip p{color:#a5f3fc;font-size:15px;margin-bottom:30px;}
+  .info-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .info-btn-primary{padding:13px 28px;background:#fff;color:var(--teal);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .info-btn-primary:hover{background:#f0fdfe;transform:translateY(-2px);}
+  .info-btn-outline{padding:13px 28px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.4);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .info-btn-outline:hover{border-color:#fff;background:rgba(255,255,255,0.1);}
+
+  /* ── FOOTER ── */
+  footer{background:var(--navy);padding:40px 24px 28px;border-top:1px solid rgba(255,255,255,0.08);}
+  .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:32px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:20px;}
+  .footer-brand h3{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;margin-bottom:6px;}
+  .footer-brand p{color:#64748b;font-size:13px;line-height:1.6;max-width:240px;}
+  .footer-links h4{color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:14px;}
+  .footer-links a{display:block;color:#64748b;text-decoration:none;font-size:13px;margin-bottom:8px;transition:color 0.2s;}
+  .footer-links a:hover{color:var(--gold);}
+  .footer-bottom{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .footer-bottom p{color:#374151;font-size:12px;}
+  .footer-bottom p strong{color:var(--gold);}
+
+  @media(max-width:640px){
+    .hero-cards{flex-direction:column;align-items:center;}
+    .hero-card{width:100%;max-width:320px;}
+    .nav-links .nav-link{display:none;}
+    .footer-inner{flex-direction:column;}
+    .ticker-label{font-size:10px;padding:0 10px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+  <div class="ticker-label">📢 सूचना</div>
+  <div class="ticker-track" id="tickerTrack">
+    <!-- Items duplicated for seamless loop -->
+    <span class="ticker-item">इस पोर्टल पर आप सिर्फ आधार कार्ड से पैन कार्ड बना सकते हैं</span>
+    <span class="ticker-item">इस पोर्टल पर आप सिर्फ आधार कार्ड से पैन कार्ड बना सकते हैं</span>
+    <span class="ticker-item">इस पोर्टल पर आप सिर्फ आधार कार्ड से पैन कार्ड बना सकते हैं</span>
+    <span class="ticker-item">इस पोर्टल पर आप सिर्फ आधार कार्ड से पैन कार्ड बना सकते हैं</span>
+    <span class="ticker-item">इस पोर्टल पर आप सिर्फ आधार कार्ड से पैन कार्ड बना सकते हैं</span>
+    <span class="ticker-item">इस पोर्टल पर आप सिर्फ आधार कार्ड से पैन कार्ड बना सकते हैं</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">🖥️</div>
+      <div>
+        <div class="nav-logo-text">DigiSeva <span>Cyber Café</span></div>
+        <!-- <div class="nav-logo-sub">GOVT. REGISTERED SERVICE CENTER</div> -->
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Services</a>
+      <a href="#how" class="nav-link">How it works</a>
+      <a href="agent.html" class="nav-link">Agent Login</a>
+      <a href="owner.html" class="nav-btn">Owner Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🇮🇳 Authorised PAN Card Service Centre</div>
+  <h1>Fast & Easy <span>PAN Card</span><br>Services</h1>
+  <div class="hero-hindi">तेज़ और आसान पैन कार्ड सेवाएं — हिंदी में सहायता उपलब्ध</div>
+  <p>Submit PAN card applications online. Track status in real time. Fully digital, secure, and trusted.</p>
+  <div class="hero-cards">
+    <a href="agent.html" class="hero-card agent">
+      <span class="card-emoji">👤</span>
+      <div class="card-title">Agent Portal</div>
+      <div class="card-hindi">एजेंट पोर्टल</div>
+      <div class="card-desc">Register as an agent, submit PAN applications for your customers and track all their statuses from one place.</div>
+      <span class="card-btn">Login / Register →</span>
+    </a>
+    <a href="owner.html" class="hero-card owner">
+      <span class="card-emoji">🔐</span>
+      <div class="card-title">Owner Dashboard</div>
+      <div class="card-hindi">मालिक का डैशबोर्ड</div>
+      <div class="card-desc">Manage all agents and applications. Verify payments, approve agents, send comments, upload receipts.</div>
+      <span class="card-btn">Owner Login →</span>
+    </a>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features" id="features">
+  <div class="section-badge">✨ Our Services</div>
+  <h2 class="section-title">Everything you need for <span>PAN Card</span></h2>
+  <p class="section-sub">Complete digital service — from application to receipt delivery.<span class="section-sub-hi">आवेदन से लेकर रसीद तक — पूरी डिजिटल सेवा</span></p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon" style="background:#fef3c7">📝</div><div class="feature-title">Easy Application</div><div class="feature-hi">आसान आवेदन</div><div class="feature-desc">Agents fill forms for customers with Aadhaar upload, signature, photograph — all in one place.</div></div>
+    <div class="feature-card"><div class="feature-icon" style="background:#d1fae5">💳</div><div class="feature-title">UPI Payment</div><div class="feature-hi">UPI भुगतान</div><div class="feature-desc">Pay ₹399 via PhonePe, GPay or Paytm. Upload screenshot instantly. Owner verifies digitally.</div></div>
+    <div class="feature-card"><div class="feature-icon" style="background:#e0e7ff">🔍</div><div class="feature-title">Live Tracking</div><div class="feature-hi">लाइव स्टेटस</div><div class="feature-desc">Agents track all their submitted applications — Pending, Approved, Rejected — from their dashboard.</div></div>
+    <div class="feature-card"><div class="feature-icon" style="background:#fce7f3">💬</div><div class="feature-title">Owner Comments</div><div class="feature-hi">मालिक का संदेश</div><div class="feature-desc">Owner can send comments to agents if any correction is needed in the application.</div></div>
+    <div class="feature-card"><div class="feature-icon" style="background:#f0fdf4">🧾</div><div class="feature-title">Digital Receipt</div><div class="feature-hi">डिजिटल रसीद</div><div class="feature-desc">Once approved, owner uploads receipt. Agent downloads it directly from their dashboard.</div></div>
+    <div class="feature-card"><div class="feature-icon" style="background:#fdf2f8">🔒</div><div class="feature-title">Secure & Safe</div><div class="feature-hi">सुरक्षित डेटा</div><div class="feature-desc">All documents are safely and securely stored.</div></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how" id="how">
+  <div class="how-inner">
+    <div class="section-badge" style="background:rgba(232,160,32,0.15);border-color:rgba(232,160,32,0.3);color:var(--gold2)">📋 How It Works</div>
+    <h2 class="section-title">Simple 4-step process</h2>
+    <p class="section-sub" style="color:#94a3b8">From agent registration to customer receipt — everything is streamlined.<span class="section-sub-hi" style="color:#c4b5fd">एजेंट रजिस्ट्रेशन से लेकर रसीद तक — सब कुछ आसान</span></p>
+    <div class="steps-grid">
+      <div class="step-card"><div class="step-num">1</div><div class="step-title">Agent Registers</div><div class="step-hi">एजेंट रजिस्टर करें</div><div class="step-desc">Agent signs up on the portal. Owner reviews and approves the agent account.</div></div>
+      <div class="step-card"><div class="step-num">2</div><div class="step-title">Submit Application</div><div class="step-hi">आवेदन जमा करें</div><div class="step-desc">Agent fills customer details, uploads documents, pays ₹399 and submits the form.</div></div>
+      <div class="step-card"><div class="step-num">3</div><div class="step-title">Owner Verifies</div><div class="step-hi">मालिक जांच करें</div><div class="step-desc">Owner verifies payment, checks documents, approves or sends comment to agent.</div></div>
+      <div class="step-card"><div class="step-num">4</div><div class="step-title">Receipt Delivered</div><div class="step-hi">रसीद मिलती है</div><div class="step-desc">Owner uploads receipt. Agent downloads it from their dashboard instantly.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- INFO STRIP -->
+<div class="info-strip">
+  <h2>Ready to get started?</h2>
+  <span class="hi">शुरू करने के लिए तैयार हैं?</span>
+  <p>Agents register for free. No monthly fees. Pay only ₹399 per application.</p>
+  <div class="info-btns">
+    <a href="agent.html" class="info-btn-primary">👤 Agent Register / Login</a>
+    <a href="owner.html" class="info-btn-outline">🔐 Owner Dashboard</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3>🖥️ DigiSeva Cyber Café</h3>
+      <p>Authorised PAN Card Service Provider. Fast, secure and fully digital service.</p>
+      <p style="margin-top:8px;font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#374151">अधिकृत पैन कार्ड सेवा केंद्र</p>
+    </div>
+    <div class="footer-links">
+      <h4>Portal</h4>
+      <a href="agent.html">Agent Login</a>
+      <a href="agent.html">Agent Register</a>
+      <a href="owner.html">Owner Dashboard</a>
+    </div>
+    <div class="footer-links">
+      <h4>Contact</h4>
+      <a href="#">By Avdhesh Kumar</a>
+      <a href="tel:8858199381">📞 8858199381</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 <strong>DigiSeva Cyber Café</strong> — All rights reserved</p>
+    <div style="color:#374151;font-size:12px">Registered Service Centre</div>
+  </div>
+</footer>
+
+</body>
+</html>

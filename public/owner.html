@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Dashboard — DigiSeva Cyber Café</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--gold:#e8a020;--gold-dim:rgba(232,160,32,0.15);--teal:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;--purple:#a78bfa;--text:#e6edf3;--muted:#7d8590;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* LOGIN */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;}
+.login-screen::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(232,160,32,0.08) 0%,transparent 70%);pointer-events:none;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:44px;width:400px;box-shadow:0 30px 80px rgba(0,0,0,0.5);position:relative;z-index:1;}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .icon{font-size:48px;margin-bottom:10px;}
+.login-logo h1{font-family:'Syne',sans-serif;font-size:22px;color:var(--gold);margin-bottom:4px;}
+.login-logo p{color:var(--muted);font-size:13px;}
+.login-field{margin-bottom:16px;}
+.login-field label{display:block;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase;}
+.login-field input{width:100%;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+.login-field input:focus{border-color:var(--gold);}
+.login-btn{width:100%;margin-top:8px;padding:14px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.login-btn:hover{background:#f5c842;transform:translateY(-1px);}
+.login-hint{text-align:center;margin-top:16px;color:var(--muted);font-size:12px;}
+.login-hint code{background:var(--surface2);padding:2px 8px;border-radius:4px;color:var(--gold);}
+.login-err{background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+
+/* DASHBOARD */
+.dashboard{display:none;min-height:100vh;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:250px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+.sidebar-logo{padding:20px;border-bottom:1px solid var(--border);}
+.sidebar-logo h2{font-family:'Syne',sans-serif;font-size:16px;color:var(--gold);}
+.sidebar-logo p{color:var(--muted);font-size:11px;margin-top:2px;}
+.sidebar-nav{padding:14px 10px;flex:1;overflow-y:auto;}
+.nav-section{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 14px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover,.nav-item.active{background:var(--gold-dim);color:var(--gold);}
+.sidebar-footer{padding:14px 10px;border-top:1px solid var(--border);}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;width:100%;background:none;border:1px solid rgba(248,81,73,0.3);border-radius:8px;color:var(--red);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s;}
+.logout-btn:hover{background:rgba(248,81,73,0.1);}
+
+.main{margin-left:250px;flex:1;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar h1{font-family:'Syne',sans-serif;font-size:20px;}
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.topbar-badge{background:var(--gold-dim);border:1px solid rgba(232,160,32,0.3);color:var(--gold);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
+.session-timer{font-size:11px;color:var(--muted);background:var(--surface2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);}
+.session-timer.warn{color:var(--yellow);border-color:rgba(210,153,34,0.4);}
+.refresh-dot{width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+
+.content{padding:24px 28px;}
+.page-section{display:none;}
+.page-section.active{display:block;}
+
+/* Stats */
+.stats-section-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;margin-top:20px;}
+.stats-section-title:first-child{margin-top:0;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:6px;}
+.stats-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color 0.2s;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card.gold::before{background:var(--gold);}
+.stat-card.yellow::before{background:var(--yellow);}
+.stat-card.green::before{background:var(--green);}
+.stat-card.red::before{background:var(--red);}
+.stat-card.purple::before{background:var(--purple);}
+.stat-card:hover{border-color:var(--gold);}
+.stat-icon{font-size:22px;margin-bottom:8px;}
+.stat-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;}
+.stat-label{color:var(--muted);font-size:12px;margin-top:3px;}
+.stat-card.gold .stat-value{color:var(--gold);}
+.stat-card.green .stat-value{color:var(--green);}
+.stat-card.yellow .stat-value{color:var(--yellow);}
+.stat-card.red .stat-value{color:var(--red);}
+.stat-card.purple .stat-value{color:var(--purple);}
+.money-card{background:linear-gradient(135deg,rgba(63,185,80,0.12),rgba(63,185,80,0.04));border:1px solid rgba(63,185,80,0.3)!important;}
+.money-card .stat-value{font-size:28px;}
+
+/* Table */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.table-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.table-header h3{font-family:'Syne',sans-serif;font-size:16px;}
+.search-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.search-bar input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:180px;}
+.search-bar input:focus{border-color:var(--gold);}
+.search-bar select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+.refresh-btn{padding:8px 14px;background:var(--gold-dim);border:1px solid rgba(232,160,32,0.3);color:var(--gold);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;font-weight:600;transition:all 0.2s;}
+.refresh-btn:hover{background:rgba(232,160,32,0.25);}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+th{padding:11px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+tbody tr{border-bottom:1px solid rgba(48,54,61,0.5);transition:background 0.15s;}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody tr.locked{background:rgba(63,185,80,0.04);}
+td{padding:12px 14px;font-size:13px;vertical-align:middle;}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.pending{background:rgba(210,153,34,0.15);color:var(--yellow);}
+.badge.approved{background:rgba(63,185,80,0.15);color:var(--green);}
+.badge.rejected{background:rgba(248,81,73,0.15);color:var(--red);}
+.badge.unpaid{background:rgba(125,133,144,0.15);color:var(--muted);}
+.badge.pay-pending{background:rgba(210,153,34,0.15);color:var(--yellow);}
+.badge.verified{background:rgba(63,185,80,0.15);color:var(--green);}
+.badge.pay-rejected{background:rgba(248,81,73,0.15);color:var(--red);}
+.badge.active-agent{background:rgba(63,185,80,0.15);color:var(--green);}
+.badge.pending-agent{background:rgba(210,153,34,0.15);color:var(--yellow);}
+
+.action-btns{display:flex;gap:5px;flex-wrap:wrap;}
+.btn-view{padding:5px 11px;background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.2);color:var(--teal);border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;font-weight:500;}
+.btn-view:hover{background:rgba(88,166,255,0.2);}
+.btn-del{padding:5px 9px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.2);color:var(--red);border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-del:hover{background:rgba(248,81,73,0.2);}
+.btn-approve{padding:5px 11px;background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.2);color:var(--green);border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;font-weight:500;}
+.btn-approve:hover{background:rgba(63,185,80,0.2);}
+.btn-block{padding:5px 11px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.2);color:var(--red);border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-block:hover{background:rgba(248,81,73,0.2);}
+.btn-locked{padding:5px 11px;background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.2);color:var(--green);border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:default;}
+
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-state .icon{font-size:36px;margin-bottom:10px;}
+
+/* Agent cards */
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;transition:border-color 0.2s;}
+.agent-card:hover{border-color:var(--gold);}
+.agent-card-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.agent-avatar{width:44px;height:44px;background:var(--gold-dim);border:2px solid var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.agent-name{font-weight:600;font-size:15px;}
+.agent-email{color:var(--muted);font-size:12px;margin-top:2px;}
+.agent-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
+.agent-stat{background:var(--surface2);border-radius:8px;padding:8px;text-align:center;}
+.agent-stat .n{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--gold);}
+.agent-stat .l{font-size:10px;color:var(--muted);}
+.agent-actions{display:flex;gap:8px;margin-top:14px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,0.6);animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes modalIn{from{opacity:0;transform:scale(0.92) translateY(20px)}to{opacity:1;transform:none}}
+.modal-header{padding:20px 26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1;}
+.modal-header h2{font-family:'Syne',sans-serif;font-size:18px;}
+.modal-close{width:32px;height:32px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.modal-close:hover{color:var(--red);border-color:rgba(248,81,73,0.4);}
+.modal-body{padding:22px 26px;}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.detail-item label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;}
+.detail-item span{font-size:14px;font-weight:500;}
+
+/* Agent info panel in modal */
+.agent-info-panel{background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.2);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+.agent-info-panel .icon{font-size:28px;}
+.agent-info-panel .name{font-weight:700;font-size:15px;color:var(--gold);}
+.agent-info-panel .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+
+.img-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.img-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.img-box-label{padding:7px 10px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;background:var(--bg);border-bottom:1px solid var(--border);}
+.img-box img{width:100%;height:110px;object-fit:cover;display:block;cursor:pointer;transition:opacity 0.2s;}
+.img-box img.contain{object-fit:contain;background:#fff;padding:3px;}
+.img-box img:hover{opacity:0.85;}
+.no-img{height:110px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;text-align:center;padding:6px;}
+
+.locked-banner{background:linear-gradient(135deg,rgba(63,185,80,0.12),rgba(63,185,80,0.04));border:1px solid rgba(63,185,80,0.4);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.locked-banner p{font-size:13px;color:var(--green);font-weight:600;}
+.locked-banner small{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:2px;}
+
+.pay-verify-panel{background:linear-gradient(135deg,rgba(63,185,80,0.06),rgba(63,185,80,0.02));border:1px solid rgba(63,185,80,0.25);border-radius:14px;padding:18px;margin-bottom:18px;}
+.pay-verify-title{font-size:13px;font-weight:700;color:var(--green);margin-bottom:14px;}
+.pay-screenshot-box{border-radius:10px;overflow:hidden;border:2px solid rgba(63,185,80,0.3);margin-bottom:14px;}
+.pay-screenshot-box img{width:100%;max-height:200px;object-fit:contain;display:block;background:#000;cursor:pointer;}
+.pay-actions{display:flex;gap:10px;}
+.btn-verify{flex:1;padding:10px;background:rgba(63,185,80,0.15);border:1px solid rgba(63,185,80,0.4);color:var(--green);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-verify:hover{background:rgba(63,185,80,0.25);}
+.btn-reject-pay{flex:1;padding:10px;background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.3);color:var(--red);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-reject-pay:hover{background:rgba(248,81,73,0.2);}
+
+/* Receipt panel */
+.receipt-panel{background:linear-gradient(135deg,rgba(88,166,255,0.08),rgba(88,166,255,0.02));border:1px solid rgba(88,166,255,0.25);border-radius:14px;padding:18px;margin-bottom:18px;}
+.receipt-panel-title{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:4px;}
+.receipt-panel-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.receipt-upload-zone{border:2px dashed rgba(88,166,255,0.4);border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:var(--surface2);position:relative;transition:all 0.2s;}
+.receipt-upload-zone:hover{border-color:var(--teal);background:rgba(88,166,255,0.08);}
+.receipt-upload-zone.has-file{border-color:var(--green);background:rgba(63,185,80,0.08);}
+.receipt-upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.receipt-preview{margin-top:12px;display:none;}
+.receipt-preview.show{display:block;}
+.receipt-preview img{width:100%;max-height:160px;object-fit:contain;border-radius:8px;border:2px solid var(--green);background:#000;}
+.receipt-submit-btn{margin-top:12px;width:100%;padding:11px;background:var(--teal);color:#000;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.receipt-submit-btn:hover{background:#7cc4ff;}
+.receipt-submit-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.receipt-existing{border:2px solid var(--green);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.receipt-existing img{width:100%;max-height:160px;object-fit:contain;display:block;background:#000;cursor:pointer;}
+.receipt-existing-label{background:var(--green);color:#000;font-size:11px;font-weight:700;padding:5px 12px;text-align:center;}
+
+/* Comment panel */
+.comment-panel{background:linear-gradient(135deg,rgba(210,153,34,0.08),rgba(210,153,34,0.02));border:1px solid rgba(210,153,34,0.25);border-radius:14px;padding:18px;margin-bottom:18px;}
+.comment-panel-title{font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.comment-panel-sub{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.comment-textarea{width:100%;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:90px;transition:border-color 0.2s;}
+.comment-textarea:focus{border-color:var(--yellow);}
+.comment-send-btn{margin-top:10px;padding:10px 20px;background:var(--yellow);color:#000;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.comment-send-btn:hover{background:#e5b52a;}
+.comment-send-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.existing-comment{background:var(--surface2);border:1px solid rgba(210,153,34,0.3);border-radius:8px;padding:10px 14px;margin-bottom:10px;}
+.existing-comment-label{font-size:11px;color:var(--yellow);font-weight:600;margin-bottom:4px;}
+.existing-comment-text{font-size:13px;color:var(--text);line-height:1.5;}
+.existing-comment-time{font-size:10px;color:var(--muted);margin-top:4px;}
+
+.status-row{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.status-row label{font-size:13px;color:var(--muted);flex:1;}
+.status-select{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+.status-update-btn{padding:8px 16px;background:var(--gold);color:#000;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.status-update-btn:hover{background:#f5c842;}
+
+/* Confirm delete */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;}
+.confirm-overlay.show{display:flex;}
+.confirm-box{background:var(--surface);border:1px solid rgba(248,81,73,0.4);border-radius:16px;padding:28px;width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+.confirm-box .icon{font-size:40px;margin-bottom:12px;}
+.confirm-box h3{font-family:'Syne',sans-serif;font-size:18px;margin-bottom:8px;}
+.confirm-box p{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.5;}
+.confirm-actions{display:flex;gap:10px;}
+.confirm-cancel{flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+.confirm-delete{flex:1;padding:11px;background:var(--red);border:none;color:#fff;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+.confirm-delete:disabled{opacity:0.6;cursor:not-allowed;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);max-width:340px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:var(--green);color:#000;}
+.toast.error{background:var(--red);color:#fff;}
+.toast.info{background:var(--yellow);color:#000;}
+
+@media(max-width:900px){
+  .stats-grid,.stats-grid-3{grid-template-columns:1fr 1fr;}
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .img-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">🔐</div>
+      <h1>Owner Dashboard</h1>
+      <p>DigiSeva Cyber Café — Admin Portal</p>
+    </div>
+    <div class="login-err" id="loginErr">❌ Invalid credentials. Try again.</div>
+    <div class="login-field"><label>Username</label><input type="text" id="username" placeholder="Enter owner username"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">🔓 Login to Dashboard</button>
+    <div class="login-hint">Login: <code>avdhesh</code> / <code>avdhesh@123</code></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <h2>🖥️ DigiSeva</h2>
+        <h2 style="font-size:14px;margin-top:2px">Cyber Cafe</h2>
+        <p>By Avdhesh Kumar</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Applications</div>
+        <button class="nav-item active" onclick="showPage('all',this)">📋 All Applications</button>
+        <button class="nav-item" onclick="showPage('pending',this)">⏳ Pending</button>
+        <button class="nav-item" onclick="showPage('approved',this)">✅ Approved</button>
+        <button class="nav-item" onclick="showPage('rejected',this)">❌ Rejected</button>
+        <button class="nav-item" onclick="showPage('pay-pending',this)">💳 Payment Pending</button>
+        <button class="nav-item" onclick="showPage('pay-verified',this)">💰 Payment Verified</button>
+        <div class="nav-section" style="margin-top:10px">Agents</div>
+        <button class="nav-item" onclick="showPage('agents',this)">👥 All Agents</button>
+        <button class="nav-item" onclick="showPage('agents-pending',this)">⏳ Pending Approval</button>
+        <button class="nav-item" onclick="window.open('agent.html')">🔗 Agent Portal</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <h1 id="pageTitle">Dashboard Overview</h1>
+        <div class="topbar-right">
+          <span class="refresh-dot" title="Auto-refreshing"></span>
+          <span class="session-timer" id="sessionTimer">Session: 12:00:00</span>
+          <span class="topbar-badge">🟢 Live</span>
+          <span style="color:var(--muted);font-size:13px">Avdhesh Kumar</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- ── APPLICATIONS PAGE ── -->
+        <div class="page-section active" id="page-applications">
+          <div class="stats-section-title">📋 Application Overview</div>
+          <div class="stats-grid">
+            <div class="stat-card gold"><div class="stat-icon">📋</div><div class="stat-value" id="totalCount">0</div><div class="stat-label">Total Applications</div></div>
+            <div class="stat-card yellow"><div class="stat-icon">⏳</div><div class="stat-value" id="pendingCount">0</div><div class="stat-label">Pending</div></div>
+            <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-value" id="approvedCount">0</div><div class="stat-label">Approved</div></div>
+            <div class="stat-card red"><div class="stat-icon">❌</div><div class="stat-value" id="rejectedCount">0</div><div class="stat-label">Rejected</div></div>
+          </div>
+          <div class="stats-section-title" style="margin-top:20px">💰 Payment Overview</div>
+          <div class="stats-grid-3">
+            <div class="stat-card green money-card"><div class="stat-icon">💰</div><div class="stat-value" id="totalCollected">₹0</div><div class="stat-label">Total Collected</div></div>
+            <div class="stat-card yellow"><div class="stat-icon">⏳</div><div class="stat-value" id="payPendingCount">0</div><div class="stat-label">Payment Pending</div></div>
+            <div class="stat-card red"><div class="stat-icon">💸</div><div class="stat-value" id="pendingAmount">₹0</div><div class="stat-label">Pending Amount</div></div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <h3 id="tableTitle">📁 All Applications</h3>
+              <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 Name / phone..." oninput="renderTable(filterData())">
+                <select id="agentFilter" onchange="renderTable(filterData())" style="width:160px">
+                  <option value="">All Agents</option>
+                </select>
+                <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+              </div>
+            </div>
+            <div style="overflow-x:auto">
+              <table>
+                <thead><tr><th>#</th><th>Customer</th><th>Phone</th><th>Agent</th><th>City</th><th>Submitted</th><th>Status</th><th>Payment</th><th>Actions</th></tr></thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+            <div class="empty-state" id="emptyState" style="display:none"><div class="icon">📭</div><p>No applications found</p></div>
+          </div>
+        </div>
+
+        <!-- ── AGENTS PAGE ── -->
+        <div class="page-section" id="page-agents">
+          <div class="stats-section-title">👥 Agent Overview</div>
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="stat-card gold"><div class="stat-icon">👥</div><div class="stat-value" id="totalAgents">0</div><div class="stat-label">Total Agents</div></div>
+            <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-value" id="approvedAgents">0</div><div class="stat-label">Approved</div></div>
+            <div class="stat-card yellow"><div class="stat-icon">⏳</div><div class="stat-value" id="pendingAgents">0</div><div class="stat-label">Pending Approval</div></div>
+          </div>
+          <div style="margin-top:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+            <h3 style="font-family:'Syne',sans-serif;font-size:16px" id="agentsTitle">👥 All Agents</h3>
+            <button class="refresh-btn" onclick="loadAgents()">↻ Refresh</button>
+          </div>
+          <div class="agents-grid" id="agentsGrid"></div>
+          <div class="empty-state" id="agentsEmpty" style="display:none"><div class="icon">👤</div><p>No agents registered yet</p></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Application Detail MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📋 Application Details</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="icon">🗑️</div>
+    <h3>Delete Application?</h3>
+    <p>This will permanently delete the application and all uploaded files.<br><strong>Cannot be undone.</strong></p>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-delete" id="confirmDeleteBtn" onclick="executeDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:3000';
+let allData    = [];
+let allAgents  = [];
+let currentFilter = 'all';
+let currentAgentPage = 'all';
+let pendingDeleteId  = null;
+const SESSION_DURATION = 12 * 60 * 60 * 1000;
+let sessionTimerInterval = null;
+let autoRefreshInterval  = null;
+
+// ── Auth ─────────────────────────────────────────────
+function doLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  if (u === 'avdhesh' && p === 'avdhesh@123') {
+    localStorage.setItem('adminLoggedIn',  'true');
+    localStorage.setItem('adminLoginTime', Date.now().toString());
+    document.getElementById('loginErr').style.display = 'none';
+    showDashboard();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display   = 'block';
+  startSessionTimer();
+  startAutoRefresh();
+  loadAll();
+  loadAgents();
+}
+
+function doLogout(reason) {
+  localStorage.removeItem('adminLoggedIn');
+  localStorage.removeItem('adminLoginTime');
+  clearInterval(sessionTimerInterval);
+  clearInterval(autoRefreshInterval);
+  allData = []; allAgents = [];
+  document.getElementById('dashboard').style.display   = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  if (reason === 'expired') {
+    const err = document.getElementById('loginErr');
+    err.textContent = '⏰ Session expired. Please login again.';
+    err.style.display = 'block';
+  }
+}
+
+function startSessionTimer() {
+  clearInterval(sessionTimerInterval);
+  const timerEl = document.getElementById('sessionTimer');
+  sessionTimerInterval = setInterval(() => {
+    const loginTime = parseInt(localStorage.getItem('adminLoginTime') || '0');
+    const remaining = SESSION_DURATION - (Date.now() - loginTime);
+    if (remaining <= 0) { clearInterval(sessionTimerInterval); clearInterval(autoRefreshInterval); doLogout('expired'); return; }
+    const h = Math.floor(remaining/3600000), m = Math.floor((remaining%3600000)/60000), s = Math.floor((remaining%60000)/1000);
+    timerEl.textContent = `Session: ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    timerEl.classList.toggle('warn', remaining < 30*60*1000);
+  }, 1000);
+}
+
+function startAutoRefresh() {
+  clearInterval(autoRefreshInterval);
+  autoRefreshInterval = setInterval(() => {
+    if (localStorage.getItem('adminLoggedIn') !== 'true') return;
+    if (Date.now() - parseInt(localStorage.getItem('adminLoginTime')||'0') >= SESSION_DURATION) return;
+    loadAll();
+    loadAgents();
+  }, 30000);
+}
+
+window.onload = () => {
+  const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+  const loginTime  = parseInt(localStorage.getItem('adminLoginTime') || '0');
+  if (isLoggedIn && (Date.now() - loginTime) < SESSION_DURATION) showDashboard();
+};
+
+// ── Data ─────────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [appsRes, statsRes] = await Promise.all([
+      fetch(`${API}/api/applications`),
+      fetch(`${API}/api/stats/payments`)
+    ]);
+    allData = await appsRes.json();
+    const stats = await statsRes.json();
+    renderStats(stats);
+    renderTable(filterData());
+    populateAgentFilter();
+  } catch(e) { showToast('Cannot reach server', 'error'); }
+}
+
+async function loadAgents() {
+  try {
+    const res = await fetch(`${API}/api/agents`);
+    allAgents = await res.json();
+    renderAgentStats();
+    renderAgents();
+  } catch(e) {}
+}
+
+function renderStats(s) {
+  document.getElementById('totalCount').textContent     = allData.length;
+  document.getElementById('pendingCount').textContent   = allData.filter(a=>a.status==='Pending').length;
+  document.getElementById('approvedCount').textContent  = allData.filter(a=>a.status==='Approved').length;
+  document.getElementById('rejectedCount').textContent  = allData.filter(a=>a.status==='Rejected').length;
+  document.getElementById('totalCollected').textContent = '₹'+(s.totalCollected||0);
+  document.getElementById('payPendingCount').textContent= s.pending||0;
+  document.getElementById('pendingAmount').textContent  = '₹'+(s.pendingAmount||0);
+}
+
+function renderAgentStats() {
+  document.getElementById('totalAgents').textContent   = allAgents.length;
+  document.getElementById('approvedAgents').textContent= allAgents.filter(a=>a.isApproved).length;
+  document.getElementById('pendingAgents').textContent = allAgents.filter(a=>!a.isApproved).length;
+}
+
+function populateAgentFilter() {
+  const sel = document.getElementById('agentFilter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All Agents</option>';
+  const agentsSeen = {};
+  allData.forEach(a => { if (a.agentId && a.agentName && !agentsSeen[a.agentId]) { agentsSeen[a.agentId] = a.agentName; sel.innerHTML += `<option value="${a.agentId}">${a.agentName}</option>`; } });
+  sel.value = cur;
+}
+
+function isFullyVerified(a) { return a.paymentStatus === 'Verified' && a.status === 'Approved'; }
+
+function filterData() {
+  let data = [...allData];
+  if      (currentFilter === 'pending')      data = data.filter(a => a.status==='Pending');
+  else if (currentFilter === 'approved')     data = data.filter(a => a.status==='Approved');
+  else if (currentFilter === 'rejected')     data = data.filter(a => a.status==='Rejected');
+  else if (currentFilter === 'pay-pending')  data = data.filter(a => a.paymentStatus==='Pending');
+  else if (currentFilter === 'pay-verified') data = data.filter(a => a.paymentStatus==='Verified');
+  const q  = document.getElementById('searchInput').value.toLowerCase();
+  const ag = document.getElementById('agentFilter').value;
+  if (q)  data = data.filter(a => a.fullName.toLowerCase().includes(q) || a.phone.includes(q));
+  if (ag) data = data.filter(a => a.agentId === ag || String(a.agentId) === ag);
+  return data;
+}
+
+function showPage(section, btn) {
+  const isAgentPage = section === 'agents' || section === 'agents-pending';
+
+  document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  if (isAgentPage) {
+    document.getElementById('page-agents').classList.add('active');
+    currentAgentPage = section;
+    const title = section === 'agents-pending' ? '⏳ Pending Approval' : '👥 All Agents';
+    document.getElementById('pageTitle').textContent   = title;
+    document.getElementById('agentsTitle').textContent = title;
+    renderAgents();
+  } else {
+    document.getElementById('page-applications').classList.add('active');
+    currentFilter = section;
+    const titles = { all:'All Applications', pending:'Pending', approved:'Approved', rejected:'Rejected', 'pay-pending':'Payment Pending', 'pay-verified':'Payment Verified' };
+    document.getElementById('pageTitle').textContent  = titles[section] || section;
+    document.getElementById('tableTitle').textContent = '📁 ' + (titles[section] || section);
+    renderTable(filterData());
+  }
+}
+
+// ── Badges ────────────────────────────────────────────
+function payBadge(s) {
+  const m = { 'Unpaid':['unpaid','💳 Unpaid'], 'Pending':['pay-pending','⏳ Verify'], 'Verified':['verified','✅ Verified'], 'Rejected':['pay-rejected','❌ Rejected'] };
+  const [c,l] = m[s]||['unpaid',s];
+  return `<span class="badge ${c}">${l}</span>`;
+}
+function appBadge(s) { return `<span class="badge ${s.toLowerCase()}">${s}</span>`; }
+
+// ── Table ─────────────────────────────────────────────
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  if (!data.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  tbody.innerHTML = data.map((a,i) => {
+    const locked = isFullyVerified(a);
+    const hasComment = a.ownerComment && a.ownerComment.trim();
+    return `
+    <tr id="row-${a._id}" class="${locked?'locked':''}">
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><strong>${a.fullName}</strong>${hasComment?` <span title="Has owner comment" style="font-size:10px">💬</span>`:''}</td>
+      <td style="font-family:monospace">${a.phone}</td>
+      <td><span style="color:var(--gold);font-size:12px">👤 ${a.agentName||'—'}</span></td>
+      <td>${a.city}</td>
+      <td style="color:var(--muted);font-size:12px">${fmtDate(a.submittedAt)}</td>
+      <td>${appBadge(a.status)}</td>
+      <td>${payBadge(a.paymentStatus)}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-view" onclick="openModal('${a._id}')">👁 View</button>
+          ${locked ? `<span class="btn-locked">🔒 Locked</span>` : `<button class="btn-del" onclick="askDelete('${a._id}')">🗑</button>`}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+
+// ── Agents ────────────────────────────────────────────
+function renderAgents() {
+  const grid  = document.getElementById('agentsGrid');
+  const empty = document.getElementById('agentsEmpty');
+  let data = [...allAgents];
+  if (currentAgentPage === 'agents-pending') data = data.filter(a => !a.isApproved);
+
+  if (!data.length) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  grid.innerHTML = data.map(agent => {
+    const appCount      = allData.filter(a => String(a.agentId) === String(agent._id)).length;
+    const approvedCount = allData.filter(a => String(a.agentId) === String(agent._id) && a.status==='Approved').length;
+    const pendingCount  = allData.filter(a => String(a.agentId) === String(agent._id) && a.status==='Pending').length;
+    return `
+    <div class="agent-card">
+      <div class="agent-card-top">
+        <div class="agent-avatar">👤</div>
+        <div style="flex:1">
+          <div class="agent-name">${agent.name}</div>
+          <div class="agent-email">${agent.email}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">📞 ${agent.phone}</div>
+        </div>
+        <span class="badge ${agent.isApproved?'active-agent':'pending-agent'}">${agent.isApproved?'✅ Active':'⏳ Pending'}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Registered: ${fmtDate(agent.registeredAt)}</div>
+      <div class="agent-stats">
+        <div class="agent-stat"><div class="n">${appCount}</div><div class="l">Total</div></div>
+        <div class="agent-stat"><div class="n" style="color:var(--green)">${approvedCount}</div><div class="l">Approved</div></div>
+        <div class="agent-stat"><div class="n" style="color:var(--yellow)">${pendingCount}</div><div class="l">Pending</div></div>
+      </div>
+      <div class="agent-actions">
+        ${agent.isApproved
+          ? `<button class="btn-block" onclick="toggleAgent('${agent._id}', false)">🚫 Block Agent</button>`
+          : `<button class="btn-approve" onclick="toggleAgent('${agent._id}', true)">✅ Approve Agent</button>`
+        }
+        <button class="btn-view" onclick="filterByAgent('${agent._id}','${agent.name}')">📋 View Apps</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function toggleAgent(id, approve) {
+  try {
+    const res  = await fetch(`${API}/api/agents/${id}/approve`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ isApproved: approve }) });
+    const data = await res.json();
+    showToast(approve ? `✅ ${data.name} approved!` : `🚫 ${data.name} blocked`, approve ? 'success' : 'info');
+    await loadAgents();
+  } catch(e) { showToast('Update failed', 'error'); }
+}
+
+function filterByAgent(agentId, agentName) {
+  document.getElementById('agentFilter').value = agentId;
+  currentFilter = 'all';
+  showPage('all', document.querySelector('.nav-item'));
+  document.getElementById('pageTitle').textContent  = `📋 Applications by ${agentName}`;
+  document.getElementById('tableTitle').textContent = `📁 Applications by ${agentName}`;
+  renderTable(filterData());
+}
+
+// ── Modal ─────────────────────────────────────────────
+function openModal(id) {
+  const a = allData.find(x => x._id === id);
+  if (!a) return;
+
+  const frontSrc = a.aadhaarFront      || null;
+  const backSrc  = a.aadhaarBack       || null;
+  const sigSrc   = a.signature         || null;
+  const photoSrc = a.photograph        || null;
+  const paySrc   = a.paymentScreenshot || null;
+  const locked   = isFullyVerified(a);
+
+  const lockedBanner = locked ? `
+    <div class="locked-banner">
+      <span style="font-size:24px">🔒</span>
+      <p>Fully verified & approved — Permanently stored
+        <small>Cannot be deleted. Data preserved in MongoDB & Cloudinary.</small>
+      </p>
+    </div>` : '';
+
+  // Agent info
+  const agentPanel = `
+    <div class="agent-info-panel">
+      <div class="icon">👤</div>
+      <div>
+        <div class="name">Agent: ${a.agentName || '—'}</div>
+        <div class="meta">Application submitted by this agent</div>
+      </div>
+    </div>`;
+
+  const payPanel = paySrc ? `
+    <div class="pay-verify-panel">
+      <div class="pay-verify-title">💳 Payment — ${a.paymentStatus==='Verified'?'✅ Verified':a.paymentStatus==='Rejected'?'❌ Rejected':'⏳ Awaiting'}</div>
+      <div class="pay-screenshot-box"><img src="${paySrc}" onclick="window.open('${paySrc}','_blank')"></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Amount: <strong style="color:var(--green)">₹${a.paymentAmount||399}</strong></div>
+      ${(!locked && a.paymentStatus!=='Verified') ? `
+      <div class="pay-actions">
+        <button class="btn-verify"     onclick="updatePayment('${a._id}','Verified')">✅ Verify Payment</button>
+        <button class="btn-reject-pay" onclick="updatePayment('${a._id}','Rejected')">❌ Reject Payment</button>
+      </div>` : '<p style="color:var(--green);font-size:13px;font-weight:600">✅ Payment verified</p>'}
+    </div>` : `
+    <div style="background:rgba(125,133,144,0.08);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px;text-align:center;color:var(--muted);font-size:13px">
+      💳 No payment screenshot uploaded yet
+    </div>`;
+
+  // Receipt panel
+  const receiptPanel = a.status === 'Approved' ? `
+    <div class="receipt-panel">
+      <div class="receipt-panel-title">🧾 Application Receipt</div>
+      <div class="receipt-panel-sub">Upload receipt so agent & customer can download it.</div>
+      ${a.receipt ? `
+        <div class="receipt-existing">
+          <img src="${a.receipt}" onclick="window.open('${a.receipt}','_blank')">
+          <div class="receipt-existing-label">✅ Receipt uploaded — click to view</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Upload new to replace:</p>` : ''}
+      <div class="receipt-upload-zone" id="rz_${a._id}">
+        <input type="file" accept="image/*,application/pdf" onchange="handleReceiptSelect(this,'${a._id}')">
+        <div style="font-size:24px;margin-bottom:6px">📄</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">Click to upload receipt</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Image or PDF, max 50MB</div>
+      </div>
+      <div class="receipt-preview" id="rp_${a._id}">
+        <img id="ri_${a._id}" src="" alt="">
+      </div>
+      <button class="receipt-submit-btn" id="rb_${a._id}" onclick="uploadReceipt('${a._id}')" style="display:none">📤 Upload Receipt</button>
+    </div>` : '';
+
+  // Comment panel
+  const commentPanel = `
+    <div class="comment-panel">
+      <div class="comment-panel-title">💬 Send Comment to Agent</div>
+      <div class="comment-panel-sub">Agent will see this message on their dashboard next to this application.</div>
+      ${a.ownerComment ? `
+        <div class="existing-comment">
+          <div class="existing-comment-label">Current comment:</div>
+          <div class="existing-comment-text">${a.ownerComment}</div>
+          ${a.commentUpdatedAt ? `<div class="existing-comment-time">${new Date(a.commentUpdatedAt).toLocaleString('en-IN')}</div>` : ''}
+        </div>` : ''}
+      <textarea class="comment-textarea" id="commentBox_${a._id}" placeholder="e.g. Aadhaar photo is blurry, please re-upload...">${a.ownerComment||''}</textarea>
+      <button class="comment-send-btn" id="commentBtn_${a._id}" onclick="sendComment('${a._id}')">💬 Send Comment</button>
+    </div>`;
+
+  document.getElementById('modalBody').innerHTML = `
+    ${lockedBanner}
+    ${agentPanel}
+    <div class="detail-grid">
+      <div class="detail-item"><label>Full Name</label><span>${a.fullName}</span></div>
+      <div class="detail-item"><label>Father's Name</label><span>${a.fatherName}</span></div>
+      <div class="detail-item"><label>Date of Birth</label><span>${a.dob}</span></div>
+      <div class="detail-item"><label>Gender</label><span>${a.gender}</span></div>
+      <div class="detail-item"><label>Phone</label><span style="font-family:monospace">${a.phone}</span></div>
+      <div class="detail-item"><label>Email</label><span>${a.email||'—'}</span></div>
+      <div class="detail-item" style="grid-column:span 2"><label>Address</label><span>${a.address}, ${a.city}, ${a.state} — ${a.pincode}</span></div>
+      <div class="detail-item"><label>Submitted</label><span>${fmtDate(a.submittedAt)}</span></div>
+      <div class="detail-item"><label>Application ID</label><span style="font-family:monospace;color:var(--gold);font-size:12px">${a._id.slice(-12).toUpperCase()}</span></div>
+    </div>
+
+    <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">🪪 Documents</div>
+    <div class="img-grid">
+      <div class="img-box"><div class="img-box-label">Aadhaar Front</div>${frontSrc?`<img src="${frontSrc}" onclick="window.open('${frontSrc}','_blank')">`:'<div class="no-img">Not uploaded</div>'}</div>
+      <div class="img-box"><div class="img-box-label">Aadhaar Back</div>${backSrc?`<img src="${backSrc}" onclick="window.open('${backSrc}','_blank')">`:'<div class="no-img">Not uploaded</div>'}</div>
+      <div class="img-box"><div class="img-box-label">Signature ✍️</div>${sigSrc?`<img class="contain" src="${sigSrc}" onclick="window.open('${sigSrc}','_blank')">`:'<div class="no-img">Not uploaded</div>'}</div>
+      <div class="img-box"><div class="img-box-label">Photograph 🖼️</div>${photoSrc?`<img class="contain" src="${photoSrc}" onclick="window.open('${photoSrc}','_blank')">`:'<div class="no-img">Not uploaded</div>'}</div>
+    </div>
+
+    ${payPanel}
+    ${receiptPanel}
+    ${commentPanel}
+
+    ${!locked ? `
+    <div class="status-row">
+      <label>Update Application Status</label>
+      <select class="status-select" id="statusSel">
+        <option ${a.status==='Pending'?'selected':''}>Pending</option>
+        <option ${a.status==='Approved'?'selected':''}>Approved</option>
+        <option ${a.status==='Rejected'?'selected':''}>Rejected</option>
+      </select>
+      <button class="status-update-btn" onclick="updateStatus('${a._id}')">Update</button>
+    </div>` : ''}
+  `;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+// ── Updates ───────────────────────────────────────────
+async function updateStatus(id) {
+  const status = document.getElementById('statusSel').value;
+  try {
+    await fetch(`${API}/api/applications/${id}/status`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status }) });
+    showToast(`Status → "${status}" ✅`, 'success');
+    closeModal(); await loadAll();
+  } catch(e) { showToast('Update failed','error'); }
+}
+
+async function updatePayment(id, paymentStatus) {
+  try {
+    await fetch(`${API}/api/applications/${id}/payment`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ paymentStatus }) });
+    showToast(paymentStatus==='Verified'?'✅ Payment verified!':'❌ Payment rejected', paymentStatus==='Verified'?'success':'error');
+    closeModal(); await loadAll();
+  } catch(e) { showToast('Update failed','error'); }
+}
+
+async function sendComment(id) {
+  const comment = document.getElementById('commentBox_' + id).value.trim();
+  const btn = document.getElementById('commentBtn_' + id);
+  btn.disabled = true; btn.textContent = '⏳ Sending...';
+  try {
+    const res  = await fetch(`${API}/api/applications/${id}/comment`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ comment }) });
+    const data = await res.json();
+    if (data._id) {
+      showToast('💬 Comment sent to agent!', 'success');
+      closeModal(); await loadAll();
+    }
+  } catch(e) { showToast('Failed to send comment','error'); }
+  btn.disabled = false; btn.textContent = '💬 Send Comment';
+}
+
+function handleReceiptSelect(input, appId) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('rz_'+appId).classList.add('has-file');
+  document.getElementById('rb_'+appId).style.display = 'block';
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => { document.getElementById('ri_'+appId).src = e.target.result; document.getElementById('rp_'+appId).classList.add('show'); };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function uploadReceipt(appId) {
+  const zone  = document.getElementById('rz_' + appId);
+  const btn   = document.getElementById('rb_' + appId);
+  const input = zone.querySelector('input[type="file"]');
+  if (!input.files[0]) return;
+  btn.disabled = true; btn.textContent = '⏳ Uploading...';
+  const fd = new FormData();
+  fd.append('receipt', input.files[0]);
+  try {
+    const res  = await fetch(`${API}/api/receipt/${appId}`, { method:'POST', body:fd });
+    const data = await res.json();
+    if (data.success) { showToast('🧾 Receipt uploaded!','success'); closeModal(); await loadAll(); }
+    else throw new Error(data.error||'Failed');
+  } catch(e) { showToast('Upload failed: '+e.message,'error'); }
+  btn.disabled = false; btn.textContent = '📤 Upload Receipt';
+}
+
+// ── Delete ─────────────────────────────────────────────
+function askDelete(id) {
+  const a = allData.find(x=>x._id===id);
+  if (!a) return;
+  if (isFullyVerified(a)) { showToast('Fully verified — cannot delete 🔒','error'); return; }
+  pendingDeleteId = id;
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+function closeConfirm() {
+  pendingDeleteId = null;
+  document.getElementById('confirmOverlay').classList.remove('show');
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = false; btn.textContent = 'Delete';
+}
+async function executeDelete() {
+  if (!pendingDeleteId) return;
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = true; btn.textContent = '⏳ Deleting...';
+  try {
+    const res = await fetch(`${API}/api/applications/${pendingDeleteId}`, { method:'DELETE' });
+    if (!res.ok) { const e=await res.json(); throw new Error(e.error||'Failed'); }
+    allData = allData.filter(a=>a._id!==pendingDeleteId);
+    const row = document.getElementById('row-'+pendingDeleteId);
+    if (row) { row.style.transition='opacity 0.3s'; row.style.opacity='0'; setTimeout(()=>row.remove(),300); }
+    closeConfirm();
+    showToast('🗑 Deleted','success');
+    await loadAll();
+  } catch(e) { showToast('Delete failed: '+e.message,'error'); btn.disabled=false; btn.textContent='Delete'; }
+}
+
+// ── Toast ──────────────────────────────────────────────
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.className = `toast ${type}`; t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 4000);
+}
+</script>
+</body>
+</html>
