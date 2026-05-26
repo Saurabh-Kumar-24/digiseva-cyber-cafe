@@ -28,16 +28,26 @@ const JWT_SECRET = process.env.JWT_SECRET || 'digiseva_secret_2024';
 //   }
 // });
 
+// const transporter = nodemailer.createTransport({
+//   host: 'smtp.gmail.com',
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS
+//   },
+//   tls: {
+//     rejectUnauthorized: false
+//   }
+// });
+
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  host:   'smtp-relay.brevo.com',
+  port:   587,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
+    user: process.env.BREVO_USER,   // your Brevo login email
+    pass: process.env.BREVO_PASS    // Brevo SMTP key
   }
 });
 
