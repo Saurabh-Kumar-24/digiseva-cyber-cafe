@@ -129,7 +129,7 @@ const applicationSchema = new mongoose.Schema({
   aadhaarBack:       { type: String },
   signature:         { type: String },
   photograph:        { type: String },
-  paymentAmount:     { type: Number, default: 399 },
+  paymentAmount:     { type: Number, default: 299 },
   paymentScreenshot: { type: String },
   paymentStatus:     { type: String, default: 'Unpaid' },
   status:            { type: String, default: 'Pending' },
@@ -481,8 +481,8 @@ app.get('/api/stats/payments', async (req, res) => {
       verified:       verified.length,
       pending:        pending.length,
       unpaid:         all.filter(a => a.paymentStatus === 'Unpaid').length,
-      totalCollected: verified.reduce((s, a) => s + (a.paymentAmount || 399), 0),
-      pendingAmount:  pending.reduce((s, a) => s + (a.paymentAmount || 399), 0)
+      totalCollected: verified.reduce((s, a) => s + (a.paymentAmount || 299), 0),
+      pendingAmount:  pending.reduce((s, a) => s + (a.paymentAmount || 299), 0)
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

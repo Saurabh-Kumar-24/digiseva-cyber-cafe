@@ -693,7 +693,7 @@ function openModal(id) {
     <div class="pay-verify-panel">
       <div class="pay-verify-title">💳 Payment — ${a.paymentStatus==='Verified'?'✅ Verified':a.paymentStatus==='Rejected'?'❌ Rejected':'⏳ Awaiting'}</div>
       <div class="pay-screenshot-box"><img src="${paySrc}" onclick="window.open('${paySrc}','_blank')"></div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Amount: <strong style="color:var(--green)">₹${a.paymentAmount||399}</strong></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Amount: <strong style="color:var(--green)">₹${a.paymentAmount||299}</strong></div>
       ${(!locked && a.paymentStatus!=='Verified') ? `
       <div class="pay-actions">
         <button class="btn-verify"     onclick="updatePayment('${a._id}','Verified')">✅ Verify Payment</button>
